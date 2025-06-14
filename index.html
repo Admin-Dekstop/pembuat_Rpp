@@ -22,9 +22,16 @@
         textarea::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        /* Ensure Inter font is used */
+        /* Ensure Inter font is used for overall UI, and Times New Roman for output simulation */
         body {
             font-family: 'Inter', sans-serif;
+        }
+        #generatedRpp {
+            font-family: 'Times New Roman', serif; /* For output area to simulate Word */
+            line-height: 1.5; /* Standard line spacing in Word */
+            white-space: pre-wrap; /* Preserve spaces and line breaks */
+            tab-size: 4; /* Ensure tabs are rendered consistently in textarea preview */
+            -moz-tab-size: 4;
         }
     </style>
 </head>
@@ -32,7 +39,7 @@
 
     <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl space-y-8">
         <h1 class="text-4xl font-extrabold text-center text-indigo-800 mb-8">
-            🚀 Generator RPP Profesional 🚀
+            ✨ Generator RPP Profesional ✨
         </h1>
 
         <!-- Input Form Container -->
@@ -77,16 +84,17 @@
                 </div>
             </div>
 
-            <!-- Section: II. Tujuan Pembelajaran -->
             <div class="col-span-full bg-green-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-green-700 mb-4">II. Tujuan Pembelajaran</h2>
                 <div class="mb-4">
-                    <label for="tujuanPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Tuliskan tujuan pembelajaran Anda, pisahkan dengan baris baru.</label>
-                    <textarea id="tujuanPembelajaran" name="tujuanPembelajaran" rows="6" placeholder="* Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:&#10;    * Menganalisis struktur teks persuasi dengan tepat.&#10;    * Menyajikan teks persuasi secara lisan dengan percaya diri.&#10;    * Menunjukkan sikap kolaboratif dalam kerja kelompok." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="tujuanPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Tuliskan tujuan pembelajaran Anda, pisahkan dengan baris baru. (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="tujuanPembelajaran" name="tujuanPembelajaran" rows="6" placeholder="- Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
+    - Menganalisis struktur teks persuasi dengan tepat.
+    - Menyajikan teks persuasi secara lisan dengan percaya diri.
+    - Menunjukkan sikap kolaboratif dalam kerja kelompok." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: III. Kompetensi Inti (KI) dan Kompetensi Dasar (KD) -->
             <div class="col-span-full bg-yellow-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-yellow-700 mb-4">III. Kompetensi Inti (KI) dan Kompetensi Dasar (KD)</h2>
                 <div class="mb-4">
@@ -94,98 +102,119 @@
                     <textarea id="kompetensiInti" name="kompetensiInti" rows="8" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
                 <div class="mb-4">
-                    <label for="kompetensiDasar" class="block text-gray-700 text-sm font-semibold mb-2">Kompetensi Dasar (KD)</label>
-                    <textarea id="kompetensiDasar" name="kompetensiDasar" rows="3" placeholder="* 3.4 Menganalisis latar belakang kedatangan bangsa-bangsa Barat ke Indonesia.&#10;* 4.4 Menyajikan hasil analisis latar belakang dan jalur kedatangan bangsa-bangsa Barat ke Indonesia." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="kompetensiDasar" class="block text-gray-700 text-sm font-semibold mb-2">Kompetensi Dasar (KD) (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="kompetensiDasar" name="kompetensiDasar" rows="3" placeholder="- 3.4 Menganalisis latar belakang kedatangan bangsa-bangsa Barat ke Indonesia.
+- 4.4 Menyajikan hasil analisis latar belakang dan jalur kedatangan bangsa-bangsa Barat ke Indonesia." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: IV. Indikator Pencapaian Kompetensi (IPK) -->
             <div class="col-span-full bg-purple-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-purple-700 mb-4">IV. Indikator Pencapaian Kompetensi (IPK)</h2>
                 <div class="mb-4">
-                    <label for="indikatorPencapaian" class="block text-gray-700 text-sm font-semibold mb-2">Indikator Pencapaian Kompetensi</label>
-                    <textarea id="indikatorPencapaian" name="indikatorPencapaian" rows="5" placeholder="* Indikator Pengetahuan (dari KD 3.X):&#10;    * 3.X.1 Mengidentifikasi motivasi 3G.&#10;* Indikator Keterampilan (dari KD 4.X):&#10;    * 4.X.1 Membuat peta jalur pelayaran." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="indikatorPencapaian" class="block text-gray-700 text-sm font-semibold mb-2">Indikator Pencapaian Kompetensi (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="indikatorPencapaian" name="indikatorPencapaian" rows="5" placeholder="- Indikator Pengetahuan (dari KD 3.X):
+    - 3.X.1 Mengidentifikasi motivasi 3G.
+- Indikator Keterampilan (dari KD 4.X):
+    - 4.X.1 Membuat peta jalur pelayaran." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: V. Materi Pembelajaran -->
             <div class="col-span-full bg-orange-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-orange-700 mb-4">V. Materi Pembelajaran</h2>
                 <div class="mb-4">
-                    <label for="materiPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Materi Pembelajaran</label>
-                    <textarea id="materiPembelajaran" name="materiPembelajaran" rows="6" placeholder="* Latar Belakang Kedatangan Bangsa Eropa:&#10;    * Faktor Pendorong (3G: Gold, Glory, Gospel).&#10;    * Perkembangan Ilmu Pengetahuan dan Teknologi.&#10;* Jalur Kedatangan Bangsa Eropa:&#10;    * Jalur pelayaran bangsa Portugis, Spanyol, Belanda, dan Inggris." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="materiPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Materi Pembelajaran (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="materiPembelajaran" name="materiPembelajaran" rows="6" placeholder="- Latar Belakang Kedatangan Bangsa Eropa:
+    - Faktor Pendorong (3G: Gold, Glory, Gospel).
+    - Perkembangan Ilmu Pengetahuan dan Teknologi.
+- Jalur Kedatangan Bangsa Eropa:
+    - Jalur pelayaran bangsa Portugis, Spanyol, Belanda, dan Inggris." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: VI. Metode Pembelajaran -->
             <div class="col-span-full bg-teal-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-teal-700 mb-4">VI. Metode Pembelajaran</h2>
                 <div class="mb-4">
-                    <label for="metodePembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Metode Pembelajaran (Pendekatan, Model, Metode, Media, Alat/Bahan)</label>
-                    <textarea id="metodePembelajaran" name="metodePembelajaran" rows="6" placeholder="* Pendekatan: Saintifik&#10;* Model Pembelajaran: Discovery Learning&#10;* Metode: Diskusi kelompok, tanya jawab, penugasan.&#10;* Media: Peta dunia, video singkat, Power Point.&#10;* Alat/Bahan: Laptop, proyektor, LKPD." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="metodePembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Metode Pembelajaran (Pendekatan, Model, Metode, Media, Alat/Bahan) (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="metodePembelajaran" name="metodePembelajaran" rows="6" placeholder="- Pendekatan: Saintifik
+- Model Pembelajaran: Discovery Learning
+- Metode: Diskusi kelompok, tanya jawab, penugasan.
+- Media: Peta dunia, video singkat, Power Point.
+- Alat/Bahan: Laptop, proyektor, LKPD." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: VII. Kegiatan Pembelajaran -->
             <div class="col-span-full bg-cyan-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-cyan-700 mb-4">VII. Kegiatan Pembelajaran</h2>
                 <div class="mb-4">
-                    <label for="kegiatanPendahuluan" class="block text-gray-700 text-sm font-semibold mb-2">A. Pendahuluan</label>
-                    <textarea id="kegiatanPendahuluan" name="kegiatanPendahuluan" rows="6" placeholder="1. Guru mengucapkan salam, berdoa, dan mengecek kehadiran.&#10;2. Apersepsi: Guru menampilkan gambar rempah-rempah.&#10;3. Motivasi: Guru menyampaikan manfaat belajar.&#10;4. Guru menyampaikan tujuan pembelajaran." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="kegiatanPendahuluan" class="block text-gray-700 text-sm font-semibold mb-2">A. Pendahuluan (Gunakan angka untuk daftar)</label>
+                    <textarea id="kegiatanPendahuluan" name="kegiatanPendahuluan" rows="6" placeholder="1. Guru mengucapkan salam, berdoa, dan mengecek kehadiran.
+2. Apersepsi: Guru menampilkan gambar rempah-rempah.
+3. Motivasi: Guru menyampaikan manfaat belajar.
+4. Guru menyampaikan tujuan pembelajaran." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
                 <div class="mb-4">
-                    <label for="kegiatanInti" class="block text-gray-700 text-sm font-semibold mb-2">B. Kegiatan Inti</label>
-                    <textarea id="kegiatanInti" name="kegiatanInti" rows="10" placeholder="* Fase 1: Pemberian Rangsangan (Stimulation)&#10;    1.  Guru menayangkan video/infografis.&#10;    2.  Peserta didik mengamati dan merumuskan pertanyaan.&#10;* Fase 2: Pernyataan/Identifikasi Masalah (Problem Statement)&#10;    1.  Peserta didik merumuskan pertanyaan.&#10;* [Lanjutkan fase-fase model pembelajaran Anda...]" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="kegiatanInti" class="block text-gray-700 text-sm font-semibold mb-2">B. Kegiatan Inti (Gunakan angka atau tanda - untuk daftar)</label>
+                    <textarea id="kegiatanInti" name="kegiatanInti" rows="10" placeholder="- Fase 1: Pemberian Rangsangan (Stimulation)
+    1.  Guru menayangkan video/infografis.
+    2.  Peserta didik mengamati dan merumuskan pertanyaan.
+- Fase 2: Pernyataan/Identifikasi Masalah (Problem Statement)
+    1.  Peserta didik merumuskan pertanyaan.
+- [Lanjutkan fase-fase model pembelajaran Anda...]" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
                 <div class="mb-4">
-                    <label for="kegiatanPenutup" class="block text-gray-700 text-sm font-semibold mb-2">C. Penutup</label>
-                    <textarea id="kegiatanPenutup" name="kegiatanPenutup" rows="6" placeholder="1. Guru dan peserta didik refleksi.&#10;2. Guru memberikan umpan balik.&#10;3. Guru memberikan penugasan.&#10;4. Guru menutup pembelajaran dengan doa dan salam." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="kegiatanPenutup" class="block text-gray-700 text-sm font-semibold mb-2">C. Penutup (Gunakan angka untuk daftar)</label>
+                    <textarea id="kegiatanPenutup" name="kegiatanPenutup" rows="6" placeholder="1. Guru dan peserta didik refleksi.
+2. Guru memberikan umpan balik.
+3. Guru memberikan penugasan.
+4. Guru menutup pembelajaran dengan doa dan salam." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: VIII. Penilaian Pembelajaran -->
             <div class="col-span-full bg-pink-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-pink-700 mb-4">VIII. Penilaian Pembelajaran</h2>
                 <div class="mb-4">
-                    <label for="penilaianPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Penilaian Pembelajaran</label>
-                    <textarea id="penilaianPembelajaran" name="penilaianPembelajaran" rows="6" placeholder="* 1. Penilaian Sikap: Observasi, Lembar Observasi.&#10;* 2. Penilaian Pengetahuan: Tes Tertulis, Soal Uraian/PG.&#10;* 3. Penilaian Keterampilan: Produk (Peta), Rubrik Penilaian Peta." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="penilaianPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Penilaian Pembelajaran (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="penilaianPembelajaran" name="penilaianPembelajaran" rows="6" placeholder="- 1. Penilaian Sikap: Observasi, Lembar Observasi.
+- 2. Penilaian Pengetahuan: Tes Tertulis, Soal Uraian/PG.
+- 3. Penilaian Keterampilan: Produk (Peta), Rubrik Penilaian Peta." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: IX. Remedial dan Pengayaan -->
             <div class="col-span-full bg-lime-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-lime-700 mb-4">IX. Remedial dan Pengayaan</h2>
                 <div class="mb-4">
-                    <label for="remedialPengayaan" class="block text-gray-700 text-sm font-semibold mb-2">Remedial dan Pengayaan</label>
-                    <textarea id="remedialPengayaan" name="remedialPengayaan" rows="5" placeholder="* Remedial: Bimbingan individual/kelompok, tugas tambahan.&#10;* Pengayaan: Studi kasus, proyek mandiri." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="remedialPengayaan" class="block text-gray-700 text-sm font-semibold mb-2">Remedial dan Pengayaan (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="remedialPengayaan" name="remedialPengayaan" rows="5" placeholder="- Remedial: Bimbingan individual/kelompok, tugas tambahan.
+- Pengayaan: Studi kasus, proyek mandiri." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: X. Sumber Belajar -->
             <div class="col-span-full bg-indigo-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-indigo-700 mb-4">X. Sumber Belajar</h2>
                 <div class="mb-4">
-                    <label for="sumberBelajar" class="block text-gray-700 text-sm font-semibold mb-2">Sumber Belajar</label>
-                    <textarea id="sumberBelajar" name="sumberBelajar" rows="5" placeholder="* Buku Teks: Kemendikbud. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas].&#10;* Internet: https://www.youtube.com/...&#10;* Lingkungan sekitar." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="sumberBelajar" class="block text-gray-700 text-sm font-semibold mb-2">Sumber Belajar (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="sumberBelajar" name="sumberBelajar" rows="5" placeholder="- Buku Teks: Kemendikbud. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas].
+- Internet: https://www.youtube.com/......
+- Lingkungan sekitar." class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: XI. Lampiran -->
             <div class="col-span-full bg-fuchsia-50 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-fuchsia-700 mb-4">XI. Lampiran</h2>
                 <div class="mb-4">
-                    <label for="lampiran" class="block text-gray-700 text-sm font-semibold mb-2">Lampiran</label>
-                    <textarea id="lampiran" name="lampiran" rows="4" placeholder="* 1. Materi Ajar&#10;* 2. Lembar Kerja Peserta Didik (LKPD)&#10;* 3. Instrumen Penilaian" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
+                    <label for="lampiran" class="block text-gray-700 text-sm font-semibold mb-2">Lampiran (Gunakan tanda - atau angka untuk daftar)</label>
+                    <textarea id="lampiran" name="lampiran" rows="4" placeholder="- 1. Materi Ajar
+- 2. Lembar Kerja Peserta Didik (LKPD)
+- 3. Instrumen Penilaian" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
                 </div>
             </div>
 
-            <!-- Section: XII. Pengesahan -->
             <div class="col-span-full bg-gray-100 p-6 rounded-lg shadow-inner">
                 <h2 class="text-2xl font-bold text-gray-700 mb-4">XII. Pengesahan</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="mb-4">
                         <label for="kotaTanggal" class="block text-gray-700 text-sm font-semibold mb-2">Kota, Tanggal RPP Dibuat</label>
-                        <input type="text" id="kotaTanggal" name="kotaTanggal" placeholder="Jakarta, 14 Juni 2025" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200">
+                        <input type="text" id="kotaTanggal" name="kotaTanggal" placeholder="[Kota/Kabupaten], 14 Juni 2025" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200">
                     </div>
                     <div class="mb-4">
                         <label for="namaKepalaSekolah" class="block text-gray-700 text-sm font-semibold mb-2">Nama Lengkap Kepala Sekolah</label>
@@ -206,13 +235,13 @@
 
         <!-- Generated RPP Output -->
         <div id="rppOutputSection" class="mt-8 bg-gray-50 p-6 rounded-xl shadow-inner border border-gray-200 hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Hasil RPP Anda (Format Markdown)</h2>
-            <textarea id="generatedRpp" class="w-full h-96 p-4 border border-gray-300 rounded-lg bg-white text-gray-900 font-mono text-sm leading-relaxed overflow-auto resize-y focus:outline-none focus:ring-2 focus:ring-blue-500" readonly></textarea>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Hasil RPP Anda (Siap Tempel di Word/Google Docs)</h2>
+            <textarea id="generatedRpp" class="w-full h-96 p-4 border border-gray-300 rounded-lg bg-white text-gray-900 leading-relaxed overflow-auto resize-y focus:outline-none focus:ring-2 focus:ring-blue-500" readonly style="white-space: pre-wrap; font-family: 'Times New Roman', serif; line-height: 1.5;"></textarea>
             <button id="copyRppBtn" class="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
                 Salin RPP
             </button>
             <p class="text-sm text-gray-600 mt-2 text-center">
-                Anda dapat menyalin teks di atas dan menempelkannya ke editor teks (seperti Microsoft Word atau Google Docs) untuk diformat lebih lanjut.
+                **PENTING:** Setelah menyalin, buka Microsoft Word/Google Docs. Pastikan untuk menempel dengan opsi **"Pertahankan Teks Saja" (Keep Text Only)** atau **"Gabungkan Pemformatan" (Merge Formatting)**. Selanjutnya, guru bisa aktifkan fitur daftar otomatis di Word (jika belum aktif) untuk poin-poin yang diawali dengan tanda strip (-) atau angka.
             </p>
         </div>
     </div>
@@ -268,10 +297,10 @@
          */
         const populateDefaultValues = () => {
             // Set default Kompetensi Inti text
-            document.getElementById('kompetensiInti').value = `* KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
-* KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
-* KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
-* KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`;
+            document.getElementById('kompetensiInti').value = `KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
+KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
+KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
+KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`;
 
             // Set default current date for Pengesahan
             const kotaTanggalInput = document.getElementById('kotaTanggal');
@@ -310,10 +339,50 @@
         };
 
         /**
-         * Generates the RPP content in Markdown format based on current rppData.
-         * @returns {string} The generated RPP Markdown string.
+         * Formats a list string for Word, maintaining indentation and list markers.
+         * Attempts to use tab character for indentation for better consistency in Word.
+         * It handles bullet points (`- `, `* `) and numbered lists (`1. `, `a. `).
+         * @param {string} text - The input text, possibly with list items.
+         * @returns {string} Formatted string for Word.
          */
-        const generateRppMarkdown = () => {
+        const formatForWordList = (text) => {
+            if (!text) return '';
+            return text.split('\n').map(line => {
+                const trimmedLine = line.trim();
+                let outputLine = '';
+                let indentLevel = 0;
+
+                // Calculate indentation level from original line's leading spaces
+                const leadingSpaces = line.match(/^(\s*)/)[1].length;
+                indentLevel = Math.floor(leadingSpaces / 4); // Assume 4 spaces per tab stop for consistency
+
+                // Detect bullet points
+                let matchBullet = trimmedLine.match(/^(-|\*)\s*(.*)/);
+                if (matchBullet) {
+                    outputLine = '\t'.repeat(indentLevel) + '• ' + matchBullet[2].trim();
+                }
+                // Detect numbered/lettered lists
+                else {
+                    let matchNumbered = trimmedLine.match(/^(\d+\.|[a-zA-Z]\.)\s*(.*)/);
+                    if (matchNumbered) {
+                        const marker = matchNumbered[1];
+                        const content = matchNumbered[2].trim();
+                        // For numbered/lettered lists, Word often auto-formats well with just tabs
+                        outputLine = '\t'.repeat(indentLevel) + marker + ' ' + content;
+                    } else {
+                        // If it's a plain line or a continuation of an indented paragraph
+                        outputLine = '\t'.repeat(indentLevel) + trimmedLine;
+                    }
+                }
+                return outputLine;
+            }).join('\n');
+        };
+
+        /**
+         * Generates the RPP content in a Word-friendly plain text format.
+         * @returns {string} The generated RPP string.
+         */
+        const generateRppWordFriendly = () => {
             const {
                 namaSekolah, mataPelajaran, kelasSemester, materiPokok, alokasiWaktu,
                 namaGuru, nipGuru, tahunPelajaran, tujuanPembelajaran, kompetensiInti,
@@ -328,167 +397,164 @@
             const estimatedIntiTime = getEstimatedTime(alokasiWaktu, 0.70);
             const estimatedPenutupTime = getEstimatedTime(alokasiWaktu, 0.15);
 
-            // Construct the RPP Markdown string using template literals
+            // Determine max label length for precise alignment in "Identitas RPP"
+            const labels = [
+                'Nama Sekolah', 'Mata Pelajaran', 'Kelas / Semester', 'Materi Pokok',
+                'Alokasi Waktu', 'Nama Guru', 'NIP Guru', 'Tahun Pelajaran'
+            ];
+            const maxLabelLength = Math.max(...labels.map(label => label.length));
+
+            // Helper to pad and align identity fields
+            const formatIdentitasLine = (label, value) => {
+                // Pad label to max length, then add ': ', then a tab, then value
+                // Using 2 spaces after colon, then one tab.
+                return `${label.padEnd(maxLabelLength)}  :\t${value}`;
+            };
+            
+            // Using consistent spacing and line breaks for Word readability
+            // Adjusting tabs for the signature block to achieve better right alignment
+            const signatureTabs = '\t'.repeat(10); // A good number of tabs for right alignment on typical A4
+
             const rppContent = `
-# RENCANA PELAKSANAAN PEMBELAJARAN (RPP)
+                        RENCANA PELAKSANAAN PEMBELAJARAN (RPP)
+                        ___________________________________________
+
+I. IDENTITAS RPP DAN INFORMASI UMUM
+${formatIdentitasLine('Nama Sekolah', namaSekolah || '[Nama Lengkap Sekolah Anda]')}
+${formatIdentitasLine('Mata Pelajaran', mataPelajaran || '[Nama Mata Pelajaran]')}
+${formatIdentitasLine('Kelas / Semester', kelasSemester || '[Kelas / Semester]')}
+${formatIdentitasLine('Materi Pokok', materiPokok || '[Topik Utama]')}
+${formatIdentitasLine('Alokasi Waktu', alokasiWaktu || '[Durasi Waktu]')}
+${formatIdentitasLine('Nama Guru', namaGuru || '[Nama Lengkap Guru Anda, S.Pd.]')}
+${formatIdentitasLine('NIP Guru', nipGuru || '[NIP Guru Anda, jika ada]')}
+${formatIdentitasLine('Tahun Pelajaran', tahunPelajaran || '[Tahun Ajaran]')}
 
 ---
 
-### I. IDENTITAS RPP DAN INFORMASI UMUM
-
-| Komponen           | Keterangan                                              |
-| :----------------- | :------------------------------------------------------ |
-| **Nama Sekolah** | **${namaSekolah || '[Nama Lengkap Sekolah Anda]'}** |
-| **Mata Pelajaran** | **${mataPelajaran || '[Nama Mata Pelajaran]'}** |
-| **Kelas / Semester**| **${kelasSemester || '[Kelas / Semester]'}** |
-| **Materi Pokok** | **${materiPokok || '[Topik Utama]'}** |
-| **Alokasi Waktu** | **${alokasiWaktu || '[Durasi Waktu]'}** |
-| **Nama Guru** | **${namaGuru || '[Nama Lengkap Guru Anda, S.Pd.]'}** |
-| **NIP Guru** | **${nipGuru || '[NIP Guru Anda, jika ada]'}** |
-| **Tahun Pelajaran**| **${tahunPelajaran || '[Tahun Ajaran]'}** |
-
----
-
-### II. TUJUAN PEMBELAJARAN
-
-${tujuanPembelajaran || `* Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
-    * [Isi Tujuan Pembelajaran 1]
-    * [Isi Tujuan Pembelajaran 2]
-    * [Isi Tujuan Pembelajaran 3]`
+II. TUJUAN PEMBELAJARAN
+${formatForWordList(tujuanPembelajaran || `- Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
+\t- [Isi Tujuan Pembelajaran 1]
+\t- [Isi Tujuan Pembelajaran 2]
+\t- [Isi Tujuan Pembelajaran 3]`)
 }
 
 ---
 
-### III. KOMPETENSI INTI (KI) dan KOMPETENSI DASAR (KD)
-
-* **Kompetensi Inti (KI):**
-${kompetensiInti || `    * KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
-    * KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
-    * KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
-    * KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`
+III. KOMPETENSI INTI (KI) dan KOMPETENSI DASAR (KD)
+Kompetensi Inti (KI):
+${formatForWordList(kompetensiInti || `• KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
+• KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
+• KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
+• KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`)
 }
 
-* **Kompetensi Dasar (KD):**
-${kompetensiDasar || `    * [Kode KD 3.X] [Bunyi KD Pengetahuan]
-    * [Kode KD 4.X] [Bunyi KD Keterampilan]`}
+Kompetensi Dasar (KD):
+${formatForWordList(kompetensiDasar || `- 3.X. [Bunyi KD Pengetahuan]
+- 4.X. [Bunyi KD Keterampilan]`)}
 
 ---
 
-### IV. INDIKATOR PENCAPAIAN KOMPETENSI (IPK)
-
-${indikatorPencapaian || `* **Indikator Pengetahuan (dari KD 3.X):**
-    * [Kode IPK 3.X.1] [Indikator Spesifik]
-    * [Kode IPK 3.X.2] [Indikator Spesifik]
-* **Indikator Keterampilan (dari KD 4.X):**
-    * [Kode IPK 4.X.1] [Indikator Spesifik]
-    * [Kode IPK 4.X.2] [Indikator Spesifik]`}
+IV. INDIKATOR PENCAPAIAN KOMPETENSI (IPK)
+${formatForWordList(indikatorPencapaian || `- Indikator Pengetahuan (dari KD 3.X):
+\t- 3.X.1 Mengidentifikasi motivasi 3G.
+- Indikator Keterampilan (dari KD 4.X):
+\t- 4.X.1 Membuat peta jalur pelayaran.`)}
 
 ---
 
-### V. MATERI PEMBELAJARAN
-
-${materiPembelajaran || `* [Topik 1]
-    * Sub-topik 1.1
-    * Sub-topik 1.2
-* [Topik 2]
-    * Sub-topik 2.1
-    * Sub-topik 2.2`}
+V. MATERI PEMBELAJARAN
+${formatForWordList(materiPembelajaran || `- Latar Belakang Kedatangan Bangsa Eropa:
+\t- Faktor Pendorong (3G: Gold, Glory, Gospel).
+\t- Perkembangan Ilmu Pengetahuan dan Teknologi.
+- Jalur Kedatangan Bangsa Eropa:
+\t- Jalur pelayaran bangsa Portugis, Spanyol, Belanda, dan Inggris.`)}
 
 ---
 
-### VI. METODE PEMBELAJARAN
-
-${metodePembelajaran || `* **Pendekatan:** [Isi, contoh: Saintifik, Kontekstual]
-* **Model Pembelajaran:** [Isi, contoh: Problem-Based Learning, Discovery Learning]
-* **Metode:** [Isi, contoh: Diskusi kelompok, tanya jawab, penugasan]
-* **Media:** [Isi, contoh: Video, Power Point, Gambar]
-* **Alat/Bahan:** [Isi, contoh: Laptop, Proyektor, LKPD]`}
-
----
-
-### VII. KEGIATAN PEMBELAJARAN
-
-* **A. Pendahuluan (${estimatedPendahuluanTime})**
-${kegiatanPendahuluan || `    1.  Guru mengucapkan salam, berdoa, dan mengecek kehadiran.
-    2.  Apersepsi: [Kegiatan mengaitkan materi sebelumnya/pengalaman siswa].
-    3.  Motivasi: [Kegiatan memotivasi siswa].
-    4.  Guru menyampaikan tujuan pembelajaran dan garis besar kegiatan.`}
-
-* **B. Kegiatan Inti (${estimatedIntiTime})**
-${kegiatanInti || `    * **Fase Model Pembelajaran (sesuai Model yang dipilih):**
-        1.  [Langkah 1: Deskripsi kegiatan guru dan siswa]
-        2.  [Langkah 2: Deskripsi kegiatan guru dan siswa]
-        3.  [Langkah seterusnya...]`}
-
-* **C. Penutup (${estimatedPenutupTime})**
-${kegiatanPenutup || `    1.  Guru dan peserta didik melakukan refleksi atas pembelajaran.
-    2.  Guru memberikan umpan balik dan penguatan.
-    3.  Guru memberikan penugasan (jika ada).
-    4.  Guru menyampaikan materi untuk pertemuan berikutnya.
-    5.  Guru menutup pembelajaran dengan doa dan salam.`}
+VI. METODE PEMBELAJARAN
+${formatForWordList(metodePembelajaran || `- Pendekatan: Saintifik
+- Model Pembelajaran: Discovery Learning
+- Metode: Diskusi kelompok, tanya jawab, penugasan.
+- Media: Peta dunia, video singkat, Power Point.
+- Alat/Bahan: Laptop, proyektor, LKPD.`)}
 
 ---
 
-### VIII. PENILAIAN PEMBELAJARAN
+VII. KEGIATAN PEMBELAJARAN
 
-${penilaianPembelajaran || `* **1. Penilaian Sikap**
-    * Teknik: Observasi
-    * Bentuk Instrumen: Lembar Observasi Sikap
-* **2. Penilaian Pengetahuan**
-    * Teknik: Tes Tertulis
-    * Bentuk Instrumen: Soal Uraian/Pilihan Ganda
-* **3. Penilaian Keterampilan**
-    * Teknik: Produk/Kinerja
-    * Bentuk Instrumen: Rubrik Penilaian Produk/Kinerja`}
+A. Pendahuluan (${estimatedPendahuluanTime})
+${formatForWordList(kegiatanPendahuluan || `1. Guru mengucapkan salam, berdoa, dan mengecek kehadiran.
+2. Apersepsi: [Kegiatan mengaitkan materi sebelumnya/pengalaman siswa].
+3. Motivasi: [Kegiatan memotivasi siswa].
+4. Guru menyampaikan tujuan pembelajaran dan garis besar kegiatan.`)}
 
----
+B. Kegiatan Inti (${estimatedIntiTime})
+${formatForWordList(kegiatanInti || `- Fase 1: Pemberian Rangsangan (Stimulation)
+\t1.  Guru menayangkan video/infografis.
+\t2.  Peserta didik mengamati dan merumuskan pertanyaan.
+- Fase 2: Pernyataan/Identifikasi Masalah (Problem Statement)
+\t1.  Peserta didik merumuskan pertanyaan.
+- [Lanjutkan fase-fase model pembelajaran Anda...]`)}
 
-### IX. REMEDIAL DAN PENGAYAAN
-
-${remedialPengayaan || `* **Remedial:**
-    * Bagi peserta didik yang belum mencapai KKM, guru memberikan bimbingan atau tugas tambahan.
-* **Pengayaan:**
-    * Bagi peserta didik yang sudah mencapai KKM, guru memberikan materi pengayaan atau tugas proyek.`}
-
----
-
-### X. SUMBER BELAJAR
-
-${sumberBelajar || `* [Buku Teks Pelajaran, contoh: Kementerian Pendidikan dan Kebudayaan. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas].]
-* [Tautan Internet, contoh: https://www.youtube.com/...]
-* [Sumber lain, contoh: Lingkungan sekitar]`}
+C. Penutup (${estimatedPenutupTime})
+${formatForWordList(kegiatanPenutup || `1. Guru dan peserta didik melakukan refleksi atas pembelajaran.
+2. Guru memberikan umpan balik.
+3. Guru memberikan penugasan.
+4. Guru menutup pembelajaran dengan doa dan salam.`)}
 
 ---
 
-### XI. LAMPIRAN
-
-${lampiran || `* 1.  Materi Ajar
-* 2.  Lembar Kerja Peserta Didik (LKPD)
-* 3.  Instrumen Penilaian`}
-
----
-
-### XII. PENGESAHAN
-
-**${kotaTanggal || '[Kota/Kabupaten], [Tanggal]'}**
-
-**Mengetahui,**
-
-**Kepala ${namaSekolah || '[Nama Lengkap Sekolah Anda]'}**
-
-**${namaKepalaSekolah || '[Nama Lengkap Kepala Sekolah Anda], [Gelar]'}**
-
-**NIP. ${nipKepalaSekolah || '[NIP Kepala Sekolah Anda, jika ada]'}**
+VIII. PENILAIAN PEMBELAJARAN
+${formatForWordList(penilaianPembelajaran || `- 1. Penilaian Sikap
+\t- Teknik: Observasi
+\t- Bentuk Instrumen: Lembar Observasi Sikap
+- 2. Penilaian Pengetahuan
+\t- Teknik: Tes Tertulis
+\t- Bentuk Instrumen: Soal Uraian/Pilihan Ganda
+- 3. Penilaian Keterampilan
+\t- Teknik: Produk/Kinerja
+\t- Bentuk Instrumen: Rubrik Penilaian Produk/Kinerja`)}
 
 ---
 
-**Guru Mata Pelajaran**
-
-**${namaGuru || '[Nama Lengkap Guru Anda], S.Pd.'}**
-
-**NIP. ${nipGuru || '[NIP Guru Anda, jika ada]'}**
+IX. REMEDIAL DAN PENGAYAAN
+${formatForWordList(remedialPengayaan || `- Remedial:
+\t- Bagi peserta didik yang belum mencapai KKM, guru memberikan bimbingan atau tugas tambahan.
+- Pengayaan:
+\t- Bagi peserta didik yang sudah mencapai KKM, guru memberikan materi pengayaan atau tugas proyek.`)}
 
 ---
+
+X. SUMBER BELAJAR
+${formatForWordList(sumberBelajar || `- Buku Teks: Kemendikbud. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas].
+- Internet: https://www.youtube.com/...
+- Lingkungan sekitar.`)}
+
+---
+
+XI. LAMPIRAN
+${formatForWordList(lampiran || `- 1. Materi Ajar
+- 2. Lembar Kerja Peserta Didik (LKPD)
+- 3. Instrumen Penilaian`)}
+
+---
+
+XII. PENGESAHAN
+
+${kotaTanggal || '[Kota/Kabupaten], [Tanggal]'}
+
+Mengetahui,
+Kepala ${namaSekolah || '[Nama Lengkap Sekolah Anda]'}
+
+${namaKepalaSekolah || '[Nama Lengkap Kepala Sekolah Anda], [Gelar]'}
+NIP. ${nipKepalaSekolah || '[NIP Kepala Sekolah Anda, jika ada]'}
+
+
+${signatureTabs}Guru Mata Pelajaran
+
+${signatureTabs}${namaGuru || '[Nama Lengkap Guru Anda], S.Pd.'}
+${signatureTabs}NIP. ${nipGuru || '[NIP Guru Anda, jika ada]'}
+
             `;
             return rppContent;
         };
@@ -498,8 +564,8 @@ ${lampiran || `* 1.  Materi Ajar
          * Hides the form and displays the generated RPP.
          */
         generateRppBtn.addEventListener('click', () => {
-            const rppMarkdown = generateRppMarkdown();
-            generatedRppTextArea.value = rppMarkdown;
+            const rppOutput = generateRppWordFriendly();
+            generatedRppTextArea.value = rppOutput;
             rppOutputSection.classList.remove('hidden'); // Show the output section
             // Scroll to the generated RPP section
             rppOutputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
