@@ -1,0 +1,473 @@
+import React, { useState, useEffect } from 'react';
+
+// Main App component for the RPP Generator
+function App() {
+  // State to store all RPP data inputs
+  const [rppData, setRppData] = useState({
+    namaSekolah: '',
+    mataPelajaran: '',
+    kelasSemester: '',
+    materiPokok: '',
+    alokasiWaktu: '',
+    namaGuru: '',
+    nipGuru: '',
+    tahunPelajaran: '',
+    tujuanPembelajaran: '',
+    kompetensiInti: '', // KI is often static, but allowing input for flexibility
+    kompetensiDasar: '',
+    indikatorPencapaian: '',
+    materiPembelajaran: '',
+    metodePembelajaran: '',
+    kegiatanPendahuluan: '',
+    kegiatanInti: '',
+    kegiatanPenutup: '',
+    penilaianPembelajaran: '',
+    remedialPengayaan: '',
+    sumberBelajar: '',
+    lampiran: '',
+    namaKepalaSekolah: '',
+    nipKepalaSekolah: '',
+    kotaTanggal: '', // For "Kota, Tanggal" in Pengesahan
+  });
+
+  // State to store the generated RPP in Markdown format
+  const [generatedRpp, setGeneratedRpp] = useState('');
+  const [copyStatus, setCopyStatus] = useState('Salin RPP'); // Text for copy button
+
+  // Initial KI/KD template for convenience
+  useEffect(() => {
+    setRppData(prevData => ({
+      ...prevData,
+      kompetensiInti: `* KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
+* KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
+* KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
+* KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`,
+      kotaTanggal: getCurrentDateFormatted(), // Set current date automatically
+    }));
+  }, []);
+
+  // Function to format the current date
+  const getCurrentDateFormatted = () => {
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date().toLocaleDateString('id-ID', options);
+  };
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setRppData({ ...rppData, [name]: value });
+  };
+
+  // Generate RPP Markdown
+  const generateRppMarkdown = () => {
+    const {
+      namaSekolah, mataPelajaran, kelasSemester, materiPokok, alokasiWaktu,
+      namaGuru, nipGuru, tahunPelajaran, tujuanPembelajaran, kompetensiInti,
+      kompetensiDasar, indikatorPencapaian, materiPembelajaran, metodePembelajaran,
+      kegiatanPendahuluan, kegiatanInti, kegiatanPenutup, penilaianPembelajaran,
+      remedialPengayaan, sumberBelajar, lampiran, namaKepalaSekolah,
+      nipKepalaSekolah, kotaTanggal
+    } = rppData;
+
+    const rppContent = `
+# RENCANA PELAKSANAAN PEMBELAJARAN (RPP)
+
+---
+
+### I. IDENTITAS RPP DAN INFORMASI UMUM
+
+| Komponen           | Keterangan                                              |
+| :----------------- | :------------------------------------------------------ |
+| **Nama Sekolah** | **${namaSekolah || '[Nama Lengkap Sekolah Anda]'}** |
+| **Mata Pelajaran** | **${mataPelajaran || '[Nama Mata Pelajaran]'}** |
+| **Kelas / Semester**| **${kelasSemester || '[Kelas / Semester]'}** |
+| **Materi Pokok** | **${materiPokok || '[Topik Utama]'}** |
+| **Alokasi Waktu** | **${alokasiWaktu || '[Durasi Waktu]'}** |
+| **Nama Guru** | **${namaGuru || '[Nama Lengkap Guru Anda, S.Pd.]'}** |
+| **NIP Guru** | **${nipGuru || '[NIP Guru Anda, jika ada]'}** |
+| **Tahun Pelajaran**| **${tahunPelajaran || '[Tahun Ajaran]'}** |
+
+---
+
+### II. TUJUAN PEMBELAJARAN
+
+${tujuanPembelajaran || `* Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
+    * [Isi Tujuan Pembelajaran 1]
+    * [Isi Tujuan Pembelajaran 2]
+    * [Isi Tujuan Pembelajaran 3]`
+}
+
+---
+
+### III. KOMPETENSI INTI (KI) dan KOMPETENSI DASAR (KD)
+
+* **Kompetensi Inti (KI):**
+${kompetensiInti || `    * KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
+    * KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
+    * KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
+    * KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`
+}
+
+* **Kompetensi Dasar (KD):**
+${kompetensiDasar || `    * [Kode KD 3.X] [Bunyi KD Pengetahuan]
+    * [Kode KD 4.X] [Bunyi KD Keterampilan]`}
+
+---
+
+### IV. INDIKATOR PENCAPAIAN KOMPETENSI (IPK)
+
+${indikatorPencapaian || `* **Indikator Pengetahuan (dari KD 3.X):**
+    * [Kode IPK 3.X.1] [Indikator Spesifik]
+    * [Kode IPK 3.X.2] [Indikator Spesifik]
+* **Indikator Keterampilan (dari KD 4.X):**
+    * [Kode IPK 4.X.1] [Indikator Spesifik]
+    * [Kode IPK 4.X.2] [Indikator Spesifik]`}
+
+---
+
+### V. MATERI PEMBELAJARAN
+
+${materiPembelajaran || `* [Topik 1]
+    * Sub-topik 1.1
+    * Sub-topik 1.2
+* [Topik 2]
+    * Sub-topik 2.1
+    * Sub-topik 2.2`}
+
+---
+
+### VI. METODE PEMBELAJARAN
+
+* **Pendekatan:** [Isi, contoh: Saintifik, Kontekstual]
+* **Model Pembelajaran:** [Isi, contoh: Problem-Based Learning, Discovery Learning]
+* **Metode:** [Isi, contoh: Diskusi kelompok, tanya jawab, penugasan]
+* **Media:** [Isi, contoh: Video, Power Point, Gambar]
+* **Alat/Bahan:** [Isi, contoh: Laptop, Proyektor, LKPD]
+
+---
+
+### VII. KEGIATAN PEMBELAJARAN
+
+* **A. Pendahuluan (${alokasiWaktu ? (parseInt(alokasiWaktu.match(/(\d+)/)?.[0] || 0) * 0.15).toFixed(0) + ' menit' : '[Estimasi Menit]'})**
+${kegiatanPendahuluan || `    1.  Guru mengucapkan salam dan mengajak peserta didik berdoa.
+    2.  Guru mengecek kehadiran peserta didik.
+    3.  Apersepsi: [Kegiatan mengaitkan materi sebelumnya/pengalaman siswa].
+    4.  Motivasi: [Kegiatan memotivasi siswa].
+    5.  Guru menyampaikan tujuan pembelajaran dan garis besar kegiatan.`}
+
+* **B. Kegiatan Inti (${alokasiWaktu ? (parseInt(alokasiWaktu.match(/(\d+)/)?.[0] || 0) * 0.70).toFixed(0) + ' menit' : '[Estimasi Menit]'})**
+${kegiatanInti || `    * **Fase Model Pembelajaran (sesuai Model yang dipilih):**
+        1.  [Langkah 1: Deskripsi kegiatan guru dan siswa]
+        2.  [Langkah 2: Deskripsi kegiatan guru dan siswa]
+        3.  [Langkah seterusnya...]`}
+
+* **C. Penutup (${alokasiWaktu ? (parseInt(alokasiWaktu.match(/(\d+)/)?.[0] || 0) * 0.15).toFixed(0) + ' menit' : '[Estimasi Menit]'})**
+${kegiatanPenutup || `    1.  Guru dan peserta didik melakukan refleksi atas pembelajaran.
+    2.  Guru memberikan umpan balik dan penguatan.
+    3.  Guru memberikan penugasan (jika ada).
+    4.  Guru menyampaikan materi untuk pertemuan berikutnya.
+    5.  Guru menutup pembelajaran dengan doa dan salam.`}
+
+---
+
+### VIII. PENILAIAN PEMBELAJARAN
+
+${penilaianPembelajaran || `* **1. Penilaian Sikap**
+    * Teknik: Observasi
+    * Bentuk Instrumen: Lembar Observasi Sikap
+* **2. Penilaian Pengetahuan**
+    * Teknik: Tes Tertulis
+    * Bentuk Instrumen: Soal Uraian/Pilihan Ganda
+* **3. Penilaian Keterampilan**
+    * Teknik: Produk/Kinerja
+    * Bentuk Instrumen: Rubrik Penilaian Produk/Kinerja`}
+
+---
+
+### IX. REMEDIAL DAN PENGAYAAN
+
+${remedialPengayaan || `* **Remedial:**
+    * Bagi peserta didik yang belum mencapai KKM, guru memberikan bimbingan atau tugas tambahan.
+* **Pengayaan:**
+    * Bagi peserta didik yang sudah mencapai KKM, guru memberikan materi pengayaan atau tugas proyek.`}
+
+---
+
+### X. SUMBER BELAJAR
+
+${sumberBelajar || `* [Buku Teks Pelajaran, contoh: Kementerian Pendidikan dan Kebudayaan. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas] Edisi Revisi. Jakarta: Pusat Kurikulum dan Perbukuan.]
+* [Tautan Internet, contoh: https://www.youtube.com/...]
+* [Sumber lain, contoh: Lingkungan sekitar]`}
+
+---
+
+### XI. LAMPIRAN
+
+${lampiran || `* 1.  Materi Ajar
+* 2.  Lembar Kerja Peserta Didik (LKPD)
+* 3.  Instrumen Penilaian`}
+
+---
+
+### XII. PENGESAHAN
+
+**${kotaTanggal || '[Kota/Kabupaten], [Tanggal]'}**
+
+**Mengetahui,**
+
+**Kepala ${namaSekolah || '[Nama Lengkap Sekolah Anda]'}**
+
+**${namaKepalaSekolah || '[Nama Lengkap Kepala Sekolah Anda], [Gelar]'}**
+
+**NIP. ${nipKepalaSekolah || '[NIP Kepala Sekolah Anda, jika ada]'}**
+
+---
+
+**Guru Mata Pelajaran**
+
+**${namaGuru || '[Nama Lengkap Guru Anda], S.Pd.'}**
+
+**NIP. ${nipGuru || '[NIP Guru Anda, jika ada]'}**
+
+---
+    `;
+    setGeneratedRpp(rppContent);
+  };
+
+  // Function to copy text to clipboard
+  const copyToClipboard = () => {
+    const textarea = document.createElement('textarea');
+    textarea.value = generatedRpp;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      setCopyStatus('Disalin!');
+      setTimeout(() => setCopyStatus('Salin RPP'), 2000); // Reset text after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      setCopyStatus('Gagal menyalin!');
+    }
+    document.body.removeChild(textarea);
+  };
+
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-4 font-['Inter']">
+      <style>{`
+        /* Custom scrollbar for textareas */
+        textarea::-webkit-scrollbar {
+          width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+      `}</style>
+      <div className="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl space-y-8">
+        <h1 className="text-4xl font-extrabold text-center text-indigo-800 mb-8">
+          🚀 Generator RPP Profesional 🚀
+        </h1>
+
+        {/* Input Form */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Section: Identitas RPP */}
+          <div className="col-span-full bg-blue-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-blue-700 mb-4">I. Identitas RPP dan Informasi Umum</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField label="Nama Sekolah" name="namaSekolah" value={rppData.namaSekolah} onChange={handleChange} placeholder="SMP Negeri 1 Jaya Raya" />
+              <InputField label="Mata Pelajaran" name="mataPelajaran" value={rppData.mataPelajaran} onChange={handleChange} placeholder="Bahasa Indonesia" />
+              <InputField label="Kelas / Semester" name="kelasSemester" value={rppData.kelasSemester} onChange={handleChange} placeholder="VIII / Genap" />
+              <InputField label="Materi Pokok" name="materiPokok" value={rppData.materiPokok} onChange={handleChange} placeholder="Teks Persuasi" />
+              <InputField label="Alokasi Waktu" name="alokasiWaktu" value={rppData.alokasiWaktu} onChange={handleChange} placeholder="3 x 45 menit (3 JP)" />
+              <InputField label="Nama Guru" name="namaGuru" value={rppData.namaGuru} onChange={handleChange} placeholder="Nama Lengkap Guru Anda, S.Pd." />
+              <InputField label="NIP Guru" name="nipGuru" value={rppData.nipGuru} onChange={handleChange} placeholder="198501012010011002" />
+              <InputField label="Tahun Pelajaran" name="tahunPelajaran" value={rppData.tahunPelajaran} onChange={handleChange} placeholder="2024/2025" />
+            </div>
+          </div>
+
+          {/* Section: Tujuan Pembelajaran */}
+          <div className="col-span-full bg-green-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-green-700 mb-4">II. Tujuan Pembelajaran</h2>
+            <TextAreaField label="Tuliskan tujuan pembelajaran Anda, pisahkan dengan baris baru." name="tujuanPembelajaran" value={rppData.tujuanPembelajaran} onChange={handleChange} rows="6" placeholder={`* Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
+    * Menganalisis struktur teks persuasi dengan tepat.
+    * Menyajikan teks persuasi secara lisan dengan percaya diri.
+    * Menunjukkan sikap kolaboratif dalam kerja kelompok.`} />
+          </div>
+
+          {/* Section: KI & KD */}
+          <div className="col-span-full bg-yellow-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-yellow-700 mb-4">III. Kompetensi Inti (KI) dan Kompetensi Dasar (KD)</h2>
+            <TextAreaField label="Kompetensi Inti (KI) - Sudah terisi default, bisa diedit." name="kompetensiInti" value={rppData.kompetensiInti} onChange={handleChange} rows="8" />
+            <TextAreaField label="Kompetensi Dasar (KD)" name="kompetensiDasar" value={rppData.kompetensiDasar} onChange={handleChange} rows="3" placeholder={`* 3.4 Menganalisis latar belakang kedatangan bangsa-bangsa Barat ke Indonesia.
+* 4.4 Menyajikan hasil analisis latar belakang dan jalur kedatangan bangsa-bangsa Barat ke Indonesia.`} />
+          </div>
+
+          {/* Section: IPK */}
+          <div className="col-span-full bg-purple-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-purple-700 mb-4">IV. Indikator Pencapaian Kompetensi (IPK)</h2>
+            <TextAreaField label="Indikator Pencapaian Kompetensi" name="indikatorPencapaian" value={rppData.indikatorPencapaian} onChange={handleChange} rows="5" placeholder={`* Indikator Pengetahuan (dari KD 3.X):
+    * 3.X.1 Mengidentifikasi motivasi 3G.
+* Indikator Keterampilan (dari KD 4.X):
+    * 4.X.1 Membuat peta jalur pelayaran.`} />
+          </div>
+
+          {/* Section: Materi Pembelajaran */}
+          <div className="col-span-full bg-orange-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-orange-700 mb-4">V. Materi Pembelajaran</h2>
+            <TextAreaField label="Materi Pembelajaran" name="materiPembelajaran" value={rppData.materiPembelajaran} onChange={handleChange} rows="6" placeholder={`* Latar Belakang Kedatangan Bangsa Eropa:
+    * Faktor Pendorong (3G: Gold, Glory, Gospel).
+    * Perkembangan Ilmu Pengetahuan dan Teknologi.
+* Jalur Kedatangan Bangsa Eropa:
+    * Jalur pelayaran bangsa Portugis, Spanyol, Belanda, dan Inggris.`} />
+          </div>
+
+          {/* Section: Metode Pembelajaran */}
+          <div className="col-span-full bg-teal-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-teal-700 mb-4">VI. Metode Pembelajaran</h2>
+            <TextAreaField label="Metode Pembelajaran (Pendekatan, Model, Metode, Media, Alat/Bahan)" name="metodePembelajaran" value={rppData.metodePembelajaran} onChange={handleChange} rows="6" placeholder={`* Pendekatan: Saintifik
+* Model Pembelajaran: Discovery Learning
+* Metode: Diskusi kelompok, tanya jawab, penugasan.
+* Media: Peta dunia, video singkat, Power Point.
+* Alat/Bahan: Laptop, proyektor, LKPD.`} />
+          </div>
+
+          {/* Section: Kegiatan Pembelajaran */}
+          <div className="col-span-full bg-cyan-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-cyan-700 mb-4">VII. Kegiatan Pembelajaran</h2>
+            <TextAreaField label="A. Pendahuluan" name="kegiatanPendahuluan" value={rppData.kegiatanPendahuluan} onChange={handleChange} rows="6" placeholder={`1. Guru mengucapkan salam, berdoa, dan mengecek kehadiran.
+2. Apersepsi: Guru menampilkan gambar rempah-rempah.
+3. Motivasi: Guru menyampaikan manfaat belajar.
+4. Guru menyampaikan tujuan pembelajaran.`} />
+            <TextAreaField label="B. Kegiatan Inti" name="kegiatanInti" value={rppData.kegiatanInti} onChange={handleChange} rows="10" placeholder={`* Fase 1: Pemberian Rangsangan (Stimulation)
+    1.  Guru menayangkan video/infografis.
+    2.  Peserta didik mengamati dan merumuskan pertanyaan.
+* Fase 2: Pernyataan/Identifikasi Masalah (Problem Statement)
+    1.  Peserta didik merumuskan pertanyaan.
+* [Lanjutkan fase-fase model pembelajaran Anda...]`} />
+            <TextAreaField label="C. Penutup" name="kegiatanPenutup" value={rppData.kegiatanPenutup} onChange={handleChange} rows="6" placeholder={`1. Guru dan peserta didik refleksi.
+2. Guru memberikan umpan balik.
+3. Guru memberikan penugasan.
+4. Guru menutup pembelajaran dengan doa dan salam.`} />
+          </div>
+
+          {/* Section: Penilaian Pembelajaran */}
+          <div className="col-span-full bg-pink-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-pink-700 mb-4">VIII. Penilaian Pembelajaran</h2>
+            <TextAreaField label="Penilaian Pembelajaran" name="penilaianPembelajaran" value={rppData.penilaianPembelajaran} onChange={handleChange} rows="6" placeholder={`* 1. Penilaian Sikap: Observasi, Lembar Observasi.
+* 2. Penilaian Pengetahuan: Tes Tertulis, Soal Uraian/PG.
+* 3. Penilaian Keterampilan: Produk (Peta), Rubrik Penilaian Peta.`} />
+          </div>
+
+          {/* Section: Remedial & Pengayaan */}
+          <div className="col-span-full bg-lime-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-lime-700 mb-4">IX. Remedial dan Pengayaan</h2>
+            <TextAreaField label="Remedial dan Pengayaan" name="remedialPengayaan" value={rppData.remedialPengayaan} onChange={handleChange} rows="5" placeholder={`* Remedial: Bimbingan individual/kelompok, tugas tambahan.
+* Pengayaan: Studi kasus, proyek mandiri.`} />
+          </div>
+
+          {/* Section: Sumber Belajar */}
+          <div className="col-span-full bg-indigo-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-indigo-700 mb-4">X. Sumber Belajar</h2>
+            <TextAreaField label="Sumber Belajar" name="sumberBelajar" value={rppData.sumberBelajar} onChange={handleChange} rows="5" placeholder={`* Buku Teks: Kemendikbud. (2017). Buku Siswa Sejarah Indonesia Kelas XI.
+* Internet: https://www.youtube.com/...
+* Lingkungan sekitar.`} />
+          </div>
+
+          {/* Section: Lampiran */}
+          <div className="col-span-full bg-fuchsia-50 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-fuchsia-700 mb-4">XI. Lampiran</h2>
+            <TextAreaField label="Lampiran" name="lampiran" value={rppData.lampiran} onChange={handleChange} rows="4" placeholder={`* 1. Materi Ajar
+* 2. Lembar Kerja Peserta Didik (LKPD)
+* 3. Instrumen Penilaian`} />
+          </div>
+
+          {/* Section: Pengesahan */}
+          <div className="col-span-full bg-gray-100 p-6 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-bold text-gray-700 mb-4">XII. Pengesahan</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField label="Kota, Tanggal RPP Dibuat" name="kotaTanggal" value={rppData.kotaTanggal} onChange={handleChange} placeholder="Jakarta, 14 Juni 2025" />
+              <InputField label="Nama Lengkap Kepala Sekolah" name="namaKepalaSekolah" value={rppData.namaKepalaSekolah} onChange={handleChange} placeholder="Nama Lengkap Kepala Sekolah Anda, M.Pd." />
+              <InputField label="NIP Kepala Sekolah" name="nipKepalaSekolah" value={rppData.nipKepalaSekolah} onChange={handleChange} placeholder="197005102000031001" />
+            </div>
+          </div>
+        </div>
+
+        {/* Generate Button */}
+        <button
+          onClick={generateRppMarkdown}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 text-xl"
+        >
+          📝 GENERATE RPP SEKARANG!
+        </button>
+
+        {/* Generated RPP Output */}
+        {generatedRpp && (
+          <div className="mt-8 bg-gray-50 p-6 rounded-xl shadow-inner border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Hasil RPP Anda (Format Markdown)</h2>
+            <textarea
+              className="w-full h-96 p-4 border border-gray-300 rounded-lg bg-white text-gray-900 font-mono text-sm leading-relaxed overflow-auto resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={generatedRpp}
+              readOnly
+            ></textarea>
+            <button
+              onClick={copyToClipboard}
+              className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              {copyStatus}
+            </button>
+            <p className="text-sm text-gray-600 mt-2 text-center">
+              Anda dapat menyalin teks di atas dan menempelkannya ke editor teks (seperti Microsoft Word atau Google Docs) untuk diformat lebih lanjut.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Helper component for Input Fields
+const InputField = ({ label, name, value, onChange, placeholder }) => (
+  <div className="mb-4">
+    <label htmlFor={name} className="block text-gray-700 text-sm font-semibold mb-2">
+      {label}
+    </label>
+    <input
+      type="text"
+      id={name}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+    />
+  </div>
+);
+
+// Helper component for TextArea Fields
+const TextAreaField = ({ label, name, value, onChange, rows, placeholder }) => (
+  <div className="mb-4">
+    <label htmlFor={name} className="block text-gray-700 text-sm font-semibold mb-2">
+      {label}
+    </label>
+    <textarea
+      id={name}
+      name={name}
+      value={value}
+      onChange={onChange}
+      rows={rows}
+      placeholder={placeholder}
+      className="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"
+    ></textarea>
+  </div>
+);
+
+export default App;
