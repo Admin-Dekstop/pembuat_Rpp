@@ -30,8 +30,8 @@
             font-family: 'Times New Roman', serif; /* For output area to simulate Word */
             line-height: 1.5; /* Standard line spacing in Word */
             white-space: pre-wrap; /* Preserve spaces and line breaks */
-            tab-size: 4; /* Ensure tabs are rendered consistently in textarea preview */
-            -moz-tab-size: 4;
+            tab-size: 8; /* Ensure tabs are rendered consistently in textarea preview (0.5 inch default in Word) */
+            -moz-tab-size: 8;
         }
     </style>
 </head>
@@ -39,7 +39,7 @@
 
     <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl space-y-8">
         <h1 class="text-4xl font-extrabold text-center text-indigo-800 mb-8">
-            ✨ Generator RPP Profesional ✨
+            ✨ Generator RPP Profesional  ✨
         </h1>
 
         <!-- Input Form Container -->
@@ -413,7 +413,10 @@ KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai,
             
             // Using consistent spacing and line breaks for Word readability
             // Adjusting tabs for the signature block to achieve better right alignment
-            const signatureTabs = '\t'.repeat(10); // A good number of tabs for right alignment on typical A4
+            // A common approach for roughly centering on the right half in Times New Roman, 12pt on A4
+            // is about 8-10 tabs or equivalent spaces. Let's try 9 tabs for better consistency.
+            const signatureLineTabCount = 9; 
+            const signatureTabs = '\t'.repeat(signatureLineTabCount); 
 
             const rppContent = `
                         RENCANA PELAKSANAAN PEMBELAJARAN (RPP)
