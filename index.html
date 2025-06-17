@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator RPP Profesional</title>
+    <title>Asisten Perancang RPP Berbasis AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom scrollbar for textareas for better aesthetics */
@@ -15,15 +15,19 @@
             border-radius: 10px;
         }
         textarea::-webkit-scrollbar-thumb {
-            background: #888;
+            background: #a3a3a3; /* Abu-abu lebih gelap */
             border-radius: 10px;
         }
         textarea::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: #737373;
         }
         /* Ensure Inter font is used for overall UI, and Times New Roman for output simulation */
         body {
             font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-smoothing: grayscale;
+            background-color: #e3f2fd; /* Biru muda pucat sedikit berbeda */
+            color: #262626;
         }
         #generatedRpp {
             font-family: 'Times New Roman', serif; /* For output area to simulate Word */
@@ -32,19 +36,196 @@
             tab-size: 8; /* Ensure tabs are rendered consistently in textarea preview (0.5 inch default in Word) */
             -moz-tab-size: 8;
         }
+
+        /* Modal Styles */
+        .api-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); /* Sangat gelap */
+            backdrop-filter: blur(10px); /* Sangat blur */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
+        }
+        .api-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content-card {
+            background-color: #ffffff;
+            padding: 3.5rem; /* Padding lebih besar */
+            border-radius: 1.5rem; /* Sudut sangat membulat */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Bayangan sangat tebal dan dalam */
+            width: 95%;
+            max-width: 650px; /* Lebar maksimum lebih besar */
+            text-align: center;
+            transform: translateY(-70px); /* Efek masuk lebih dramatis */
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efek pegas */
+        }
+        .api-modal-overlay.show .modal-content-card {
+            transform: translateY(0);
+        }
+        .modal-content-card h2 {
+            font-size: 2.25rem; /* Ukuran font lebih besar */
+            font-weight: 900; /* Ekstra tebal */
+            color: #0d9488; /* Teal-600 */
+            margin-bottom: 1.75rem;
+        }
+        .modal-content-card p {
+            color: #4b5563; /* Gray-700 */
+            margin-bottom: 2.25rem;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        .modal-content-card input[type="password"] {
+            margin-bottom: 2.25rem;
+            border: 2px solid #a3a3a3; /* Border abu-abu sedikit berbeda */
+            border-radius: 0.85rem; /* Lebih membulat */
+            padding: 1.1rem 1.6rem; /* Padding lebih besar */
+            width: 100%;
+            font-size: 1.2rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .modal-actions-group {
+            display: flex;
+            gap: 1.75rem; /* Jarak antar tombol lebih besar */
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .modal-actions-group button {
+            flex-grow: 1;
+            padding: 1.1rem 2.2rem; /* Padding lebih besar */
+            border-radius: 0.85rem;
+            font-weight: 800; /* Lebih tebal */
+            cursor: pointer;
+            transition: all 0.3s ease-in-out; /* Transisi untuk semua properti */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Bayangan tombol lebih tebal */
+        }
+        .modal-actions-group .btn-action-save {
+            background-color: #0d9488; /* Teal-600 */
+            color: white;
+        }
+        .modal-actions-group .btn-action-save:hover {
+            background-color: #0f766e; /* Teal-700 */
+            transform: translateY(-4px) scale(1.03); /* Efek angkat dan sedikit membesar */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .modal-actions-group .btn-action-clear {
+            background-color: #ef4444; /* Red-500 */
+            color: white;
+        }
+        .modal-actions-group .btn-action-clear:hover {
+            background-color: #dc2626; /* Red-600 */
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .modal-actions-group .btn-action-close {
+            background-color: #6b7280; /* Gray-500 */
+            color: white;
+        }
+        .modal-actions-group .btn-action-close:hover {
+            background-color: #4b5563; /* Gray-600 */
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Settings Button Styles */
+        #apiSettingsButton {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 4rem; /* Ukuran lebih besar */
+            height: 4rem;
+            padding: 0.8rem;
+            background-color: #0d9488; /* Teal-600 */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1002;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        #apiSettingsButton:hover {
+            background-color: #0f766e;
+            transform: scale(1.15) rotate(90deg); /* Efek berputar 90 derajat */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Notification Message Box */
+        .notification-message {
+            position: absolute; /* Changed to absolute to be relative to parent container */
+            top: 1rem; /* Adjust top position within the parent */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            max-width: 90%;
+            padding: 1.2rem 2.5rem;
+            border-radius: 1.2rem;
+            font-size: 1.1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .notification-message.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .notification-success {
+            background-color: #ecfdf5; /* Green-50 */
+            color: #065f46; /* Green-800 */
+            border: 1px solid #34d399; /* Green-400 */
+        }
+        .notification-error {
+            background-color: #fee2e2; /* Red-100 */
+            color: #991b1b; /* Red-800 */
+            border: 1px solid #fca5a5; /* Red-400 */
+        }
+        .required-field {
+            border-color: #ef4444 !important; /* Merah untuk field wajib yang kosong */
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.4) !important; /* Glow merah yang lebih jelas */
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-4">
+<body class="min-h-screen p-6">
 
-    <div class="max-w-6xl mx-auto bg-white p-8 rounded-xl shadow-2xl space-y-8">
-        <h1 class="text-4xl font-extrabold text-center text-indigo-800 mb-8">
-            ✨ Generator RPP Profesional ✨
+    <div class="max-w-6xl mx-auto bg-white p-8 md:p-10 rounded-3xl shadow-2xl relative">
+        <button id="apiSettingsButton">
+            <!-- New SVG icon for a "menu" or "settings" feel (three horizontal lines) -->
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+            </svg>
+        </button>
+
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center text-blue-800 mb-8 leading-tight">
+            ✨ Asisten Perancang RPP Berbasis AI ✨
         </h1>
+        <p class="text-center text-gray-700 mb-10 text-lg">
+            Isi detail RPP Anda di bawah, dan biarkan AI membantu menyusunnya dengan lengkap dan profesional.
+        </p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            <div class="col-span-full bg-blue-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-blue-700 mb-4">I. Identitas RPP dan Informasi Umum</h2>
+            <div class="col-span-full bg-blue-50 p-6 rounded-xl shadow-inner border border-blue-200">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4">I. Identitas RPP dan Informasi Umum <span class="text-red-500">*</span></h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="mb-4">
                         <label for="namaSekolah" class="block text-gray-700 text-sm font-semibold mb-2">Nama Sekolah</label>
@@ -81,8 +262,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-green-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-green-700 mb-4">II. Tujuan Pembelajaran</h2>
+            <div class="col-span-full bg-green-50 p-6 rounded-xl shadow-inner border border-green-200">
+                <h2 class="text-2xl font-bold text-green-700 mb-4">II. Tujuan Pembelajaran <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="tujuanPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Tuliskan tujuan pembelajaran Anda, pisahkan dengan baris baru. (Gunakan tanda - atau angka untuk daftar)</label>
                     <textarea id="tujuanPembelajaran" name="tujuanPembelajaran" rows="6" placeholder="- Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
@@ -92,8 +273,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-yellow-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-yellow-700 mb-4">III. Kompetensi Inti (KI) dan Kompetensi Dasar (KD)</h2>
+            <div class="col-span-full bg-yellow-50 p-6 rounded-xl shadow-inner border border-yellow-200">
+                <h2 class="text-2xl font-bold text-yellow-700 mb-4">III. Kompetensi Inti (KI) dan Kompetensi Dasar (KD) <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="kompetensiInti" class="block text-gray-700 text-sm font-semibold mb-2">Kompetensi Inti (KI) - Sudah terisi default, bisa diedit.</label>
                     <textarea id="kompetensiInti" name="kompetensiInti" rows="8" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200 resize-y"></textarea>
@@ -105,8 +286,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-purple-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-purple-700 mb-4">IV. Indikator Pencapaian Kompetensi (IPK)</h2>
+            <div class="col-span-full bg-purple-50 p-6 rounded-xl shadow-inner border border-purple-200">
+                <h2 class="text-2xl font-bold text-purple-700 mb-4">IV. Indikator Pencapaian Kompetensi (IPK) <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="indikatorPencapaian" class="block text-gray-700 text-sm font-semibold mb-2">Indikator Pencapaian Kompetensi (Gunakan tanda - atau angka untuk daftar)</label>
                     <textarea id="indikatorPencapaian" name="indikatorPencapaian" rows="5" placeholder="- Indikator Pengetahuan (dari KD 3.X):
@@ -116,8 +297,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-orange-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-orange-700 mb-4">V. Materi Pembelajaran</h2>
+            <div class="col-span-full bg-orange-50 p-6 rounded-xl shadow-inner border border-orange-200">
+                <h2 class="text-2xl font-bold text-orange-700 mb-4">V. Materi Pembelajaran <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="materiPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Materi Pembelajaran (Gunakan tanda - atau angka untuk daftar)</label>
                     <textarea id="materiPembelajaran" name="materiPembelajaran" rows="6" placeholder="- Latar Belakang Kedatangan Bangsa Eropa:
@@ -128,8 +309,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-teal-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-teal-700 mb-4">VI. Metode Pembelajaran</h2>
+            <div class="col-span-full bg-teal-50 p-6 rounded-xl shadow-inner border border-teal-200">
+                <h2 class="text-2xl font-bold text-teal-700 mb-4">VI. Metode Pembelajaran <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="metodePembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Metode Pembelajaran (Pendekatan, Model, Metode, Media, Alat/Bahan) (Gunakan tanda - atau angka untuk daftar)</label>
                     <textarea id="metodePembelajaran" name="metodePembelajaran" rows="6" placeholder="- Pendekatan: Saintifik
@@ -140,8 +321,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-cyan-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-cyan-700 mb-4">VII. Kegiatan Pembelajaran</h2>
+            <div class="col-span-full bg-cyan-50 p-6 rounded-xl shadow-inner border border-cyan-200">
+                <h2 class="text-2xl font-bold text-cyan-700 mb-4">VII. Kegiatan Pembelajaran <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="kegiatanPendahuluan" class="block text-gray-700 text-sm font-semibold mb-2">A. Pendahuluan (Gunakan angka untuk daftar)</label>
                     <textarea id="kegiatanPendahuluan" name="kegiatanPendahuluan" rows="6" placeholder="1. Guru mengucapkan salam, berdoa, dan mengecek kehadiran.
@@ -167,8 +348,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-pink-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-pink-700 mb-4">VIII. Penilaian Pembelajaran</h2>
+            <div class="col-span-full bg-pink-50 p-6 rounded-xl shadow-inner border border-pink-200">
+                <h2 class="text-2xl font-bold text-pink-700 mb-4">VIII. Penilaian Pembelajaran <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="penilaianPembelajaran" class="block text-gray-700 text-sm font-semibold mb-2">Penilaian Pembelajaran (Gunakan tanda - atau angka untuk daftar)</label>
                     <textarea id="penilaianPembelajaran" name="penilaianPembelajaran" rows="6" placeholder="- 1. Penilaian Sikap: Observasi, Lembar Observasi.
@@ -177,8 +358,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-lime-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-lime-700 mb-4">IX. Remedial dan Pengayaan</h2>
+            <div class="col-span-full bg-lime-50 p-6 rounded-xl shadow-inner border border-lime-200">
+                <h2 class="text-2xl font-bold text-lime-700 mb-4">IX. Remedial dan Pengayaan <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="remedialPengayaan" class="block text-gray-700 text-sm font-semibold mb-2">Remedial dan Pengayaan (Gunakan tanda - atau angka untuk daftar)</label>
                     <textarea id="remedialPengayaan" name="remedialPengayaan" rows="5" placeholder="- Remedial: Bimbingan individual/kelompok, tugas tambahan.
@@ -186,8 +367,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-indigo-50 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-indigo-700 mb-4">X. Sumber Belajar</h2>
+            <div class="col-span-full bg-indigo-50 p-6 rounded-xl shadow-inner border border-indigo-200">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-4">X. Sumber Belajar <span class="text-red-500">*</span></h2>
                 <div class="mb-4">
                     <label for="sumberBelajar" class="block text-gray-700 text-sm font-semibold mb-2">Sumber Belajar (Gunakan tanda - atau angka untuk daftar)</label>
                     <textarea id="sumberBelajar" name="sumberBelajar" rows="5" placeholder="- Buku Teks: Kemendikbud. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas].
@@ -196,7 +377,7 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-fuchsia-50 p-6 rounded-lg shadow-inner">
+            <div class="col-span-full bg-fuchsia-50 p-6 rounded-xl shadow-inner border border-fuchsia-200">
                 <h2 class="text-2xl font-bold text-fuchsia-700 mb-4">XI. Lampiran</h2>
                 <div class="mb-4">
                     <label for="lampiran" class="block text-gray-700 text-sm font-semibold mb-2">Lampiran (Gunakan tanda - atau angka untuk daftar)</label>
@@ -206,8 +387,8 @@
                 </div>
             </div>
 
-            <div class="col-span-full bg-gray-100 p-6 rounded-lg shadow-inner">
-                <h2 class="text-2xl font-bold text-gray-700 mb-4">XII. Pengesahan</h2>
+            <div class="col-span-full bg-gray-100 p-6 rounded-xl shadow-inner border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4">XII. Pengesahan <span class="text-red-500">*</span></h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="mb-4">
                         <label for="kotaTanggal" class="block text-gray-700 text-sm font-semibold mb-2">Kota, Tanggal RPP Dibuat</label>
@@ -225,8 +406,12 @@
             </div>
         </div>
 
-        <button id="generateRppBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg transform transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 text-xl">
-            📝 GENERATE RPP SEKARANG!
+        <button id="generateRppBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-4 px-6 rounded-lg shadow-lg transform transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 text-xl mt-8 flex items-center justify-center">
+            <span id="generateBtnText">📝 GENERATE RPP SEKARANG!</span>
+            <span id="generateBtnSpinner" class="hidden animate-spin h-6 w-6 border-4 border-white border-t-transparent rounded-full ml-3"></span>
+        </button>
+        <button id="resetFormBtn" class="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50 text-lg mt-4">
+            Bersihkan Formulir
         </button>
 
         <div id="rppOutputSection" class="mt-8 bg-gray-50 p-6 rounded-xl shadow-inner border border-gray-200 hidden">
@@ -241,33 +426,34 @@
         </div>
     </div>
 
+    <div id="geminiApiModal" class="api-modal-overlay">
+        <div class="modal-content-card">
+            <h2>Konfigurasi Kunci API Gemini</h2>
+            <p>
+                Untuk memanfaatkan kapabilitas AI, Anda perlu memasukkan Kunci API Gemini Anda.
+                Kunci ini akan disimpan secara lokal di browser Anda dan tidak akan dikirimkan ke server eksternal.
+            </p>
+            <input type="password" id="modalApiInput" placeholder="Contoh: AIzaSyC_..." class="focus:ring-teal-400">
+            <div class="modal-actions-group">
+                <button id="saveApiBtn" class="btn-action-save">Simpan Kunci</button>
+                <button id="clearApiBtn" class="btn-action-clear">Hapus Kunci</button>
+                <button id="closeApiModalBtn" class="btn-action-close">Tutup</button>
+            </div>
+            <p class="mt-6 text-sm text-gray-600">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-teal-600 hover:underline font-semibold">Dapatkan Kunci API Gemini Anda di sini</a>
+            </p>
+        </div>
+    </div>
+
     <script>
         // Object to store all RPP data inputs
         const rppData = {
-            namaSekolah: '',
-            mataPelajaran: '',
-            kelasSemester: '',
-            materiPokok: '',
-            alokasiWaktu: '',
-            namaGuru: '',
-            nipGuru: '',
-            tahunPelajaran: '',
-            tujuanPembelajaran: '',
-            kompetensiInti: '',
-            kompetensiDasar: '',
-            indikatorPencapaian: '',
-            materiPembelajaran: '',
-            metodePembelajaran: '',
-            kegiatanPendahuluan: '',
-            kegiatanInti: '',
-            kegiatanPenutup: '',
-            penilaianPembelajaran: '',
-            remedialPengayaan: '',
-            sumberBelajar: '',
-            lampiran: '',
-            namaKepalaSekolah: '',
-            nipKepalaSekolah: '',
-            kotaTanggal: '',
+            namaSekolah: '', mataPelajaran: '', kelasSemester: '', materiPokok: '', alokasiWaktu: '',
+            namaGuru: '', nipGuru: '', tahunPelajaran: '', tujuanPembelajaran: '', kompetensiInti: '',
+            kompetensiDasar: '', indikatorPencapaian: '', materiPembelajaran: '', metodePembelajaran: '',
+            kegiatanPendahuluan: '', kegiatanInti: '', kegiatanPenutup: '', penilaianPembelajaran: '',
+            remedialPengayaan: '', sumberBelajar: '', lampiran: '', namaKepalaSekolah: '',
+            nipKepalaSekolah: '', kotaTanggal: '',
         };
 
         // Get references to DOM elements
@@ -276,6 +462,438 @@
         const generatedRppTextArea = document.getElementById('generatedRpp');
         const copyRppBtn = document.getElementById('copyRppBtn');
         const rppOutputSection = document.getElementById('rppOutputSection');
+        const resetFormBtn = document.getElementById('resetFormBtn'); // Tombol Reset
+        const generateBtnText = document.getElementById('generateBtnText');
+        const generateBtnSpinner = document.getElementById('generateBtnSpinner');
+
+        // API Modal Elements
+        const geminiApiModal = document.getElementById('geminiApiModal');
+        const modalApiInputElem = document.getElementById('modalApiInput');
+        const saveApiBtn = document.getElementById('saveApiBtn');
+        const clearApiBtn = document.getElementById('clearApiBtn');
+        const closeApiModalBtn = document.getElementById('closeApiModalBtn');
+        const apiSettingsButton = document.getElementById('apiSettingsButton');
+
+
+        /**
+         * Menampilkan pesan notifikasi sementara di UI.
+         * @param {string} message - Pesan yang akan ditampilkan.
+         * @param {boolean} isError - True jika pesan adalah error, false jika sukses.
+         */
+        function showNotification(message, isError = false) {
+            const container = document.querySelector('.max-w-6xl.mx-auto');
+            let notificationDiv = container.querySelector('.notification-message');
+
+            if (!notificationDiv) {
+                notificationDiv = document.createElement('div');
+                notificationDiv.className = `notification-message p-4 rounded-xl text-center text-base absolute top-8 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
+                container.insertBefore(notificationDiv, container.firstChild);
+            }
+
+            notificationDiv.textContent = message;
+            notificationDiv.classList.remove('notification-success', 'notification-error', 'hidden', 'show');
+            notificationDiv.classList.add(isError ? 'notification-error' : 'notification-success');
+            notificationDiv.classList.add('show');
+
+            setTimeout(() => {
+                notificationDiv.classList.remove('show');
+                setTimeout(() => notificationDiv.classList.add('hidden'), 400); // Penundaan untuk transisi
+            }, 3500); // Durasi tampil pesan lebih lama
+        }
+
+        /**
+         * Menyimpan Kunci API Gemini ke localStorage.
+         */
+        function storeApiKey() {
+            const apiKey = modalApiInputElem.value.trim();
+            if (apiKey) {
+                localStorage.setItem('geminiApiKey', apiKey);
+                geminiApiModal.classList.remove('show');
+                showNotification('Kunci API Gemini berhasil disimpan.', false);
+            } else {
+                showNotification('Kunci API Gemini tidak boleh kosong.', true);
+            }
+        }
+
+        /**
+         * Menghapus Kunci API Gemini dari localStorage.
+         */
+        function removeApiKey() {
+            localStorage.removeItem('geminiApiKey');
+            modalApiInputElem.value = '';
+            showNotification('Kunci API Gemini telah dihapus.', false);
+        }
+
+        /**
+         * Mengatur status loading pada tombol dan spinner.
+         * @param {boolean} isLoading - True untuk menampilkan loading, false untuk menyembunyikan.
+         */
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                generateBtnText.textContent = 'Membangun RPP...';
+                generateBtnSpinner.classList.remove('hidden');
+                generateRppBtn.disabled = true;
+                resetFormBtn.disabled = true;
+                copyRppBtn.disabled = true;
+            } else {
+                generateBtnText.textContent = '📝 GENERATE RPP SEKARANG!';
+                generateBtnSpinner.classList.add('hidden');
+                generateRppBtn.disabled = false;
+                resetFormBtn.disabled = false;
+                copyRppBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Validasi input form.
+         * @returns {boolean} True jika semua input wajib terisi, false jika tidak.
+         */
+        function validateInputs() {
+            const requiredFields = [
+                'namaSekolah', 'mataPelajaran', 'kelasSemester', 'materiPokok', 'alokasiWaktu',
+                'namaGuru', 'tahunPelajaran', 'tujuanPembelajaran', 'kompetensiInti', 'kompetensiDasar',
+                'indikatorPencapaian', 'materiPembelajaran', 'metodePembelajaran', 'kegiatanPendahuluan',
+                'kegiatanInti', 'kegiatanPenutup', 'penilaianPembelajaran', 'remedialPengayaan',
+                'sumberBelajar', 'kotaTanggal', 'namaKepalaSekolah', 'nipKepalaSekolah' // Lampiran tidak wajib diisi untuk prompt AI
+            ];
+
+            let allValid = true;
+            requiredFields.forEach(id => {
+                const elem = document.getElementById(id);
+                if (elem && elem.value.trim() === '') {
+                    elem.classList.add('required-field');
+                    allValid = false;
+                } else {
+                    elem.classList.remove('required-field');
+                }
+            });
+
+            if (!allValid) {
+                showNotification('Harap lengkapi semua bidang yang ditandai dengan (*).', true);
+            }
+            return allValid;
+        }
+
+        /**
+         * Formats a list string for Word, maintaining indentation and list markers.
+         * It attempts to use tab character for indentation for better consistency in Word.
+         * It handles bullet points (`- `, `* `) and numbered lists (`1. `, `a. `).
+         * This version tries to be smarter about detecting multi-level lists.
+         * @param {string} text - The input text, possibly with list items.
+         * @returns {string} Formatted string for Word.
+         */
+        const formatForWordList = (text) => {
+            if (!text) return '';
+            const lines = text.split('\n');
+            let formattedLines = [];
+
+            lines.forEach(line => {
+                let trimmedLine = line.trimStart(); // Only trim leading spaces
+                let indentLevel = 0;
+
+                // Calculate indentation level from original line's leading spaces
+                const leadingSpaces = line.match(/^(\s*)/)[1].length;
+                // Assuming 4 spaces per tab stop in the input for multi-level lists.
+                indentLevel = Math.floor(leadingSpaces / 4);
+
+                let outputLine = '';
+
+                // Try to detect common list markers and handle them
+                // Bullet points: -, *
+                if (trimmedLine.match(/^(-|\*)\s/)) {
+                    outputLine = '\t'.repeat(indentLevel) + '• ' + trimmedLine.substring(trimmedLine.match(/^(-|\*)\s/)[0].length).trimStart();
+                }
+                // Numbered lists: 1., 2), a., b)
+                else if (trimmedLine.match(/^(\d+\.|\d+\)|\w+\.|\w+\))\s/)) {
+                    const match = trimmedLine.match(/^(\d+\.|\d+\)|\w+\.|\w+\))\s/);
+                    const marker = match[1];
+                    const content = trimmedLine.substring(match[0].length).trimStart();
+                    outputLine = '\t'.repeat(indentLevel) + marker + ' ' + content;
+                }
+                else {
+                    // If no specific list marker, treat as a normal indented line
+                    outputLine = '\t'.repeat(indentLevel) + trimmedLine;
+                }
+                formattedLines.push(outputLine);
+            });
+            return formattedLines.join('\n');
+        };
+
+        /**
+         * Constructs the detailed prompt for the Gemini AI.
+         * @param {object} data - The RPP data collected from inputs.
+         * @returns {string} The full prompt for the AI.
+         */
+        const constructGeminiPrompt = (data) => {
+            const {
+                namaSekolah, mataPelajaran, kelasSemester, materiPokok, alokasiWaktu,
+                namaGuru, nipGuru, tahunPelajaran, tujuanPembelajaran, kompetensiInti,
+                kompetensiDasar, indikatorPencapaian, materiPembelajaran, metodePembelajaran,
+                kegiatanPendahuluan, kegiatanInti, kegiatanPenutup, penilaianPembelajaran,
+                remedialPengayaan, sumberBelajar, lampiran, namaKepalaSekolah,
+                nipKepalaSekolah, kotaTanggal
+            } = data;
+
+            // Determine max label length for precise alignment in "Identitas RPP"
+            const labels = [
+                'Nama Sekolah', 'Mata Pelajaran', 'Kelas / Semester', 'Materi Pokok',
+                'Alokasi Waktu', 'Nama Guru', 'NIP Guru', 'Tahun Pelajaran'
+            ];
+            const maxLabelLength = Math.max(...labels.map(label => label.length));
+
+            const formatIdentitasLine = (label, value) => {
+                return `${label.padEnd(maxLabelLength)} : ${value}`;
+            };
+
+            const signatureTabs = '\t'.repeat(9); // Adjust as needed for visual alignment in Word
+
+            // Prompt instructions for AI
+            let prompt = `Sebagai asisten perancang RPP profesional, hasilkan RPP lengkap dalam format teks siap-tempel untuk Microsoft Word/Google Docs.
+            
+**Panduan Pemformatan:**
+* Gunakan judul dan sub-judul RPP seperti yang diminta.
+* Gunakan spasi dan tab (\t) untuk indentasi.
+* Format daftar menggunakan bullet point (misal: "- ") atau angka (misal: "1. ").
+* Pastikan alokasi waktu kegiatan pembelajaran (Pendahuluan, Inti, Penutup) realistis dan sesuai proporsi.
+
+**Jika ada bagian yang kosong atau kurang detail, gunakan keahlian Anda untuk mengisinya secara logis dan relevan berdasarkan konteks yang diberikan.**
+
+Berikut adalah data RPP yang tersedia:
+
+RENCANA PELAKSANAAN PEMBELAJARAN (RPP)
+___________________________________________
+
+I. IDENTITAS RPP DAN INFORMASI UMUM
+${formatIdentitasLine('Nama Sekolah', namaSekolah || '[Nama Lengkap Sekolah Anda]')}
+${formatIdentitasLine('Mata Pelajaran', mataPelajaran || '[Nama Mata Pelajaran]')}
+${formatIdentitasLine('Kelas / Semester', kelasSemester || '[Kelas / Semester]')}
+${formatIdentitasLine('Materi Pokok', materiPokok || '[Topik Utama]')}
+${formatIdentitasLine('Alokasi Waktu', alokasiWaktu || '[Durasi Waktu, misal: 3 x 45 menit (3 JP)]')}
+${formatIdentitasLine('Nama Guru', namaGuru || '[Nama Lengkap Guru Anda, S.Pd.]')}
+${formatIdentitasLine('NIP Guru', nipGuru || '[NIP Guru Anda, jika ada]')}
+${formatIdentitasLine('Tahun Pelajaran', tahunPelajaran || '[Tahun Ajaran, misal: 2024/2025]')}
+
+---
+
+II. TUJUAN PEMBELAJARAN
+${tujuanPembelajaran || `- Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
+\t- [Isi Tujuan Pembelajaran 1]
+\t- [Isi Tujuan Pembelajaran 2]
+\t- [Isi Tujuan Pembelajaran 3]`}
+
+---
+
+III. KOMPETENSI INTI (KI) dan KOMPETENSI DASAR (KD)
+Kompetensi Inti (KI):
+${kompetensiInti || `KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
+KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
+KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
+KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`}
+
+Kompetensi Dasar (KD):
+${kompetensiDasar || `- 3.X. [Bunyi KD Pengetahuan]
+- 4.X. [Bunyi KD Keterampilan]`}
+
+---
+
+IV. INDIKATOR PENCAPAIAN KOMPETENSI (IPK)
+${indikatorPencapaian || `- Indikator Pengetahuan (dari KD 3.X):
+\t- 3.X.1 [Isi Indikator Pengetahuan]
+- Indikator Keterampilan (dari KD 4.X):
+\t- 4.X.1 [Isi Indikator Keterampilan]`}
+
+---
+
+V. MATERI PEMBELAJARAN
+${materiPembelajaran || `- [Topik Utama Materi Pembelajaran]
+\t- [Sub-topik 1]
+\t- [Sub-topik 2]
+- [Topik Lanjutan Materi Pembelajaran]
+\t- [Sub-topik 1]`}
+
+---
+
+VI. METODE PEMBELAJARAN
+${metodePembelajaran || `- Pendekatan: [Misal: Saintifik, Kontekstual]
+- Model Pembelajaran: [Misal: Discovery Learning, Project Based Learning]
+- Metode: [Misal: Diskusi kelompok, tanya jawab, penugasan, simulasi]
+- Media: [Misal: Video, Power Point, Peta]
+- Alat/Bahan: [Misal: Laptop, proyektor, LKPD, alat peraga]`}
+
+---
+
+VII. KEGIATAN PEMBELAJARAN
+
+A. Pendahuluan (${getEstimatedTime(alokasiWaktu, 0.15)})
+${kegiatanPendahuluan || `1. Guru mengucapkan salam, berdoa, dan mengecek kehadiran.
+2. Apersepsi: [Kegiatan mengaitkan materi sebelumnya/pengalaman siswa].
+3. Motivasi: [Kegiatan memotivasi siswa, misal: menyampaikan manfaat belajar, relevansi materi].
+4. Guru menyampaikan tujuan pembelajaran dan garis besar kegiatan yang akan dilakukan.`}
+
+B. Kegiatan Inti (${getEstimatedTime(alokasiWaktu, 0.70)})
+${kegiatanInti || `- Fase 1: Pemberian Rangsangan (Stimulation)
+\t1.  Guru menayangkan [video/gambar/stimulus lain] terkait materi.
+\t2.  Peserta didik mengamati dan merumuskan pertanyaan awal.
+- Fase 2: Pernyataan/Identifikasi Masalah (Problem Statement)
+\t1.  Peserta didik (secara individu/kelompok) merumuskan masalah berdasarkan rangsangan.
+- Fase 3: Pengumpulan Data (Data Collection)
+\t1.  Peserta didik mencari informasi dari berbagai sumber (buku, internet, diskusi).
+- Fase 4: Pengolahan Data (Data Processing)
+\t1.  Peserta didik menganalisis data yang terkumpul.
+- Fase 5: Pembuktian (Verification)
+\t1.  Peserta didik mempresentasikan hasil pengolahan data dan membandingkannya dengan teori.
+- Fase 6: Generalisasi (Generalization)
+\t1.  Peserta didik menyimpulkan materi yang telah dipelajari.`}
+
+C. Penutup (${getEstimatedTime(alokasiWaktu, 0.15)})
+${kegiatanPenutup || `1. Guru dan peserta didik melakukan refleksi atas pembelajaran yang telah berlangsung (Apa yang sudah dipelajari? Bagian mana yang sulit?).
+2. Guru memberikan umpan balik konstruktif terhadap proses dan hasil pembelajaran.
+3. Guru memberikan penugasan individu/kelompok untuk memperdalam materi atau persiapan pertemuan berikutnya.
+4. Guru menutup pembelajaran dengan doa dan salam.`}
+
+---
+
+VIII. PENILAIAN PEMBELAJARAN
+${penilaianPembelajaran || `- 1. Penilaian Sikap
+\t- Teknik: Observasi
+\t- Bentuk Instrumen: Lembar Observasi Sikap
+- 2. Penilaian Pengetahuan
+\t- Teknik: Tes Tertulis (Esai/Pilihan Ganda)
+\t- Bentuk Instrumen: Soal Tes Pengetahuan
+- 3. Penilaian Keterampilan
+\t- Teknik: Produk/Kinerja ([Sebutkan jenis produk/kinerja, misal: Presentasi, Proyek, Peta Konsep])
+\t- Bentuk Instrumen: Rubrik Penilaian Produk/Kinerja`}
+
+---
+
+IX. REMEDIAL DAN PENGAYAAN
+${remedialPengayaan || `- Remedial:
+\t- Bagi peserta didik yang belum mencapai KKM, guru memberikan bimbingan individual/kelompok atau tugas tambahan terkait materi yang belum dikuasai.
+- Pengayaan:
+\t- Bagi peserta didik yang sudah mencapai KKM, guru memberikan materi pengayaan, studi kasus lanjutan, atau tugas proyek mandiri untuk memperdalam pemahaman.`}
+
+---
+
+X. SUMBER BELAJAR
+${sumberBelajar || `- Buku Teks: [Sebutkan buku teks yang relevan, misal: Kemendikbud. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas].]
+- Internet: [Sebutkan tautan website/video edukasi yang relevan, misal: https://www.youtube.com/...]
+- Lingkungan sekitar (jika relevan).`}
+
+---
+
+XI. LAMPIRAN
+${lampiran || `- 1. Materi Ajar (Ringkasan materi, infografis)
+- 2. Lembar Kerja Peserta Didik (LKPD) / Lembar Aktivitas
+- 3. Instrumen Penilaian (Soal dan rubrik)`}
+
+---
+
+XII. PENGESAHAN
+
+${kotaTanggal || '[Kota/Kabupaten], ' + getCurrentDateFormatted()}
+
+Mengetahui,
+Kepala ${namaSekolah || '[Nama Lengkap Sekolah Anda]'}
+
+${namaKepalaSekolah || '[Nama Lengkap Kepala Sekolah Anda], [Gelar]'}
+NIP. ${nipKepalaSekolah || '[NIP Kepala Sekolah Anda, jika ada]'}
+
+
+${signatureTabs}Guru Mata Pelajaran
+
+${signatureTabs}${namaGuru || '[Nama Lengkap Guru Anda], S.Pd.'}
+${signatureTabs}NIP. ${nipGuru || '[NIP Guru Anda, jika ada]'}
+`;
+            return prompt;
+        };
+
+
+        /**
+         * Fetches RPP content from Gemini API based on user inputs.
+         */
+        async function generateRppWithAI() {
+            const apiKey = localStorage.getItem('geminiApiKey');
+            if (!apiKey) {
+                geminiApiModal.classList.add('show');
+                showNotification('Kunci API Gemini tidak ditemukan. Harap masukkan kunci Anda.', true);
+                return;
+            }
+
+            // Update rppData object from current input values
+            inputFields.forEach(input => {
+                rppData[input.name] = input.value;
+            });
+
+            if (!validateInputs()) {
+                return; // Stop if validation fails
+            }
+
+            setLoadingState(true);
+            rppOutputSection.classList.remove('hidden');
+            generatedRppTextArea.value = `Sedang memproses RPP Anda dengan bantuan AI, mohon tunggu... (Ini mungkin memakan waktu beberapa detik)\n\n[Mengambil data...]\n[Membangun struktur...]\n[Menyempurnakan konten...]`;
+            generatedRppTextArea.classList.add('animate-pulse-subtle');
+            rppOutputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            const prompt = constructGeminiPrompt(rppData);
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const generatedContent = result.candidates[0].content.parts[0].text;
+                    // Apply formatForWordList to ensure consistent list formatting,
+                    // even if AI attempts it, this can fix minor inconsistencies.
+                    // However, we rely mostly on AI to get it right from the prompt.
+                    generatedRppTextArea.value = generatedContent;
+                    showNotification('RPP berhasil dibuat oleh AI!', false);
+                } else {
+                    generatedRppTextArea.value = `Gagal menghasilkan RPP. Respons AI tidak valid atau kosong.\nCoba lagi atau periksa kunci API Anda.`;
+                    showNotification('Respons API tidak valid atau kosong.', true);
+                }
+            } catch (error) {
+                console.error('Error fetching from Gemini API:', error);
+                generatedRppTextArea.value = `Terjadi kesalahan saat menghubungi API: ${error.message}.\nPastikan koneksi internet Anda stabil dan kunci API sudah benar.`;
+                showNotification('Terjadi kesalahan saat menghubungi API.', true);
+            } finally {
+                setLoadingState(false);
+                generatedRppTextArea.classList.remove('animate-pulse-subtle');
+            }
+        }
+
+
+        /**
+         * Populates default values for KI and the current date on load.
+         */
+        const populateDefaultValues = () => {
+            document.getElementById('kompetensiInti').value = `KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
+KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
+KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
+KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`;
+
+            document.getElementById('kotaTanggal').value = 'Jakarta, ' + getCurrentDateFormatted();
+
+
+            // Initialize rppData with default values
+            inputFields.forEach(input => {
+                rppData[input.name] = input.value;
+            });
+            // Hide output section initially
+            rppOutputSection.classList.add('hidden');
+            generatedRppTextArea.value = ''; // Clear previous output
+        };
 
         /**
          * Function to format the current date in Indonesian (e.g., "14 Juni 2025").
@@ -288,28 +906,14 @@
         };
 
         /**
-         * Populates default values for KI and the current date on load.
-         */
-        const populateDefaultValues = () => {
-            // Set default Kompetensi Inti text
-            document.getElementById('kompetensiInti').value = `KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
-KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
-KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
-KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`;
-
-            // Initialize rppData with default values
-            inputFields.forEach(input => {
-                rppData[input.name] = input.value;
-            });
-        };
-
-        /**
          * Updates the rppData object when an input field changes.
          * @param {Event} event - The input change event.
          */
         const handleInputChange = (event) => {
             const { name, value } = event.target;
             rppData[name] = value;
+            // Remove required-field class instantly if user types something
+            event.target.classList.remove('required-field');
         };
 
         /**
@@ -331,245 +935,6 @@ KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai,
         };
 
         /**
-         * Formats a list string for Word, maintaining indentation and list markers.
-         * It attempts to use tab character for indentation for better consistency in Word.
-         * It handles bullet points (`- `, `* `) and numbered lists (`1. `, `a. `).
-         * This version tries to be smarter about detecting multi-level lists.
-         * @param {string} text - The input text, possibly with list items.
-         * @returns {string} Formatted string for Word.
-         */
-        const formatForWordList = (text) => {
-            if (!text) return '';
-            const lines = text.split('\n');
-            let formattedLines = [];
-
-            lines.forEach(line => {
-                let trimmedLine = line.trimStart(); // Only trim leading spaces
-                let indentLevel = 0;
-
-                // Calculate indentation level from original line's leading spaces
-                const leadingSpaces = line.match(/^(\s*)/)[1].length;
-                // Assuming 2 or 4 spaces per tab stop in the input. Adjust as needed.
-                indentLevel = Math.floor(leadingSpaces / 4); 
-
-                let outputLine = '';
-
-                // Try to detect common list markers and handle them
-                // Bullet points: -, *
-                if (trimmedLine.match(/^(-|\*)\s/)) {
-                    outputLine = '\t'.repeat(indentLevel) + '• ' + trimmedLine.substring(trimmedLine.match(/^(-|\*)\s/)[0].length).trimStart();
-                } 
-                // Numbered lists: 1., 2), a., b)
-                else if (trimmedLine.match(/^(\d+\.|\d+\)|\w+\.|\w+\))\s/)) {
-                    const match = trimmedLine.match(/^(\d+\.|\d+\)|\w+\.|\w+\))\s/);
-                    const marker = match[1];
-                    const content = trimmedLine.substring(match[0].length).trimStart();
-                    outputLine = '\t'.repeat(indentLevel) + marker + ' ' + content;
-                }
-                else {
-                    // If no specific list marker, treat as a normal indented line
-                    outputLine = '\t'.repeat(indentLevel) + trimmedLine;
-                }
-                formattedLines.push(outputLine);
-            });
-            return formattedLines.join('\n');
-        };
-
-
-        /**
-         * Generates the RPP content in a Word-friendly plain text format.
-         * @returns {string} The generated RPP string.
-         */
-        const generateRppWordFriendly = () => {
-            const {
-                namaSekolah, mataPelajaran, kelasSemester, materiPokok, alokasiWaktu,
-                namaGuru, nipGuru, tahunPelajaran, tujuanPembelajaran, kompetensiInti,
-                kompetensiDasar, indikatorPencapaian, materiPembelajaran, metodePembelajaran,
-                kegiatanPendahuluan, kegiatanInti, kegiatanPenutup, penilaianPembelajaran,
-                remedialPengayaan, sumberBelajar, lampiran, namaKepalaSekolah,
-                nipKepalaSekolah, kotaTanggal
-            } = rppData;
-
-            // Calculate estimated times for sections
-            const estimatedPendahuluanTime = getEstimatedTime(alokasiWaktu, 0.15); // 15% for intro
-            const estimatedIntiTime = getEstimatedTime(alokasiWaktu, 0.70); // 70% for core
-            const estimatedPenutupTime = getEstimatedTime(alokasiWaktu, 0.15); // 15% for closing
-
-            // Determine max label length for precise alignment in "Identitas RPP"
-            const labels = [
-                'Nama Sekolah', 'Mata Pelajaran', 'Kelas / Semester', 'Materi Pokok',
-                'Alokasi Waktu', 'Nama Guru', 'NIP Guru', 'Tahun Pelajaran'
-            ];
-            const maxLabelLength = Math.max(...labels.map(label => label.length));
-
-            // Helper to pad and align identity fields
-            const formatIdentitasLine = (label, value) => {
-                // Pad label to max length, then add ': ', then a tab, then value
-                return `${label.padEnd(maxLabelLength)}  :\t${value}`;
-            };
-            
-            // Adjusting tabs for the signature block to achieve better right alignment
-            // A common approach for roughly centering on the right half in Times New Roman, 12pt on A4
-            // is about 8-10 tabs or equivalent spaces. Let's try 9 tabs for better consistency.
-            const signatureLineTabCount = 9;
-            const signatureTabs = '\t'.repeat(signatureLineTabCount);
-
-            const rppContent = `
-                        RENCANA PELAKSANAAN PEMBELAJARAN (RPP)
-                        ___________________________________________
-
-I. IDENTITAS RPP DAN INFORMASI UMUM
-${formatIdentitasLine('Nama Sekolah', namaSekolah || '[Nama Lengkap Sekolah Anda]')}
-${formatIdentitasLine('Mata Pelajaran', mataPelajaran || '[Nama Mata Pelajaran]')}
-${formatIdentitasLine('Kelas / Semester', kelasSemester || '[Kelas / Semester]')}
-${formatIdentitasLine('Materi Pokok', materiPokok || '[Topik Utama]')}
-${formatIdentitasLine('Alokasi Waktu', alokasiWaktu || '[Durasi Waktu]')}
-${formatIdentitasLine('Nama Guru', namaGuru || '[Nama Lengkap Guru Anda, S.Pd.]')}
-${formatIdentitasLine('NIP Guru', nipGuru || '[NIP Guru Anda, jika ada]')}
-${formatIdentitasLine('Tahun Pelajaran', tahunPelajaran || '[Tahun Ajaran]')}
-
----
-
-II. TUJUAN PEMBELAJARAN
-${formatForWordList(tujuanPembelajaran || `- Setelah mengikuti proses pembelajaran, peserta didik diharapkan mampu:
-\t- [Isi Tujuan Pembelajaran 1]
-\t- [Isi Tujuan Pembelajaran 2]
-\t- [Isi Tujuan Pembelajaran 3]`)
-}
-
----
-
-III. KOMPETENSI INTI (KI) dan KOMPETENSI DASAR (KD)
-Kompetensi Inti (KI):
-${formatForWordList(kompetensiInti || `KI-1: Menghargai dan menghayati ajaran agama yang dianutnya.
-KI-2: Menunjukkan perilaku jujur, disiplin, tanggung jawab, peduli (toleransi, gotong royong), santun, percaya diri dalam berinteraksi secara efektif dengan lingkungan sosial dan alam dalam jangkauan pergaulan dan keberadaannya.
-KI-3: Memahami dan menerapkan pengetahuan (faktual, konseptual, prosedural) berdasarkan rasa ingin tahunya tentang ilmu pengetahuan, teknologi, seni, budaya terkait fenomena dan kejadian tampak mata.
-KI-4: Mengolah, menyaji, dan menalar dalam ranah konkret (menggunakan, mengurai, merangkai, memodifikasi, dan membuat) dan ranah abstrak (menulis, membaca, menghitung, menggambar, dan mengarang) sesuai dengan yang dipelajari di sekolah dan sumber lain yang sama dalam sudut pandang/teori.`)
-}
-
-Kompetensi Dasar (KD):
-${formatForWordList(kompetensiDasar || `- 3.X. [Bunyi KD Pengetahuan]
-- 4.X. [Bunyi KD Keterampilan]`)}
-
----
-
-IV. INDIKATOR PENCAPAIAN KOMPETENSI (IPK)
-${formatForWordList(indikatorPencapaian || `- Indikator Pengetahuan (dari KD 3.X):
-\t- 3.X.1 Mengidentifikasi motivasi 3G.
-- Indikator Keterampilan (dari KD 4.X):
-\t- 4.X.1 Membuat peta jalur pelayaran.`)}
-
----
-
-V. MATERI PEMBELAJARAN
-${formatForWordList(materiPembelajaran || `- Latar Belakang Kedatangan Bangsa Eropa:
-\t- Faktor Pendorong (3G: Gold, Glory, Gospel).
-\t- Perkembangan Ilmu Pengetahuan dan Teknologi.
-- Jalur Kedatangan Bangsa Eropa:
-\t- Jalur pelayaran bangsa Portugis, Spanyol, Belanda, dan Inggris.`)}
-
----
-
-VI. METODE PEMBELAJARAN
-${formatForWordList(metodePembelajaran || `- Pendekatan: Saintifik
-- Model Pembelajaran: Discovery Learning
-- Metode: Diskusi kelompok, tanya jawab, penugasan.
-- Media: Peta dunia, video singkat, Power Point.
-- Alat/Bahan: Laptop, proyektor, LKPD.`)}
-
----
-
-VII. KEGIATAN PEMBELAJARAN
-
-A. Pendahuluan (${estimatedPendahuluanTime})
-${formatForWordList(kegiatanPendahuluan || `1. Guru mengucapkan salam, berdoa, dan mengecek kehadiran.
-2. Apersepsi: [Kegiatan mengaitkan materi sebelumnya/pengalaman siswa].
-3. Motivasi: [Kegiatan memotivasi siswa].
-4. Guru menyampaikan tujuan pembelajaran dan garis besar kegiatan.`)}
-
-B. Kegiatan Inti (${estimatedIntiTime})
-${formatForWordList(kegiatanInti || `- Fase 1: Pemberian Rangsangan (Stimulation)
-\t1.  Guru menayangkan video/infografis.
-\t2.  Peserta didik mengamati dan merumuskan pertanyaan.
-- Fase 2: Pernyataan/Identifikasi Masalah (Problem Statement)
-\t1.  Peserta didik merumuskan pertanyaan.
-- [Lanjutkan fase-fase model pembelajaran Anda...]`)}
-
-C. Penutup (${estimatedPenutupTime})
-${formatForWordList(kegiatanPenutup || `1. Guru dan peserta didik melakukan refleksi atas pembelajaran.
-2. Guru memberikan umpan balik.
-3. Guru memberikan penugasan.
-4. Guru menutup pembelajaran dengan doa dan salam.`)}
-
----
-
-VIII. PENILAIAN PEMBELAJARAN
-${formatForWordList(penilaianPembelajaran || `- 1. Penilaian Sikap
-\t- Teknik: Observasi
-\t- Bentuk Instrumen: Lembar Observasi Sikap
-- 2. Penilaian Pengetahuan
-\t- Teknik: Tes Tertulis
-\t- Bentuk Instrumen: Soal Uraian/Pilihan Ganda
-- 3. Penilaian Keterampilan
-\t- Teknik: Produk/Kinerja
-\t- Bentuk Instrumen: Rubrik Penilaian Produk/Kinerja`)}
-
----
-
-IX. REMEDIAL DAN PENGAYAAN
-${formatForWordList(remedialPengayaan || `- Remedial:
-\t- Bagi peserta didik yang belum mencapai KKM, guru memberikan bimbingan atau tugas tambahan.
-- Pengayaan:
-\t- Bagi peserta didik yang sudah mencapai KKM, guru memberikan materi pengayaan atau tugas proyek.`)}
-
----
-
-X. SUMBER BELAJAR
-${formatForWordList(sumberBelajar || `- Buku Teks: Kemendikbud. (2017). Buku Siswa [Mata Pelajaran] Kelas [Kelas].
-- Internet: https://www.youtube.com/...
-- Lingkungan sekitar.`)}
-
----
-
-XI. LAMPIRAN
-${formatForWordList(lampiran || `- 1. Materi Ajar
-- 2. Lembar Kerja Peserta Didik (LKPD)
-- 3. Instrumen Penilaian`)}
-
----
-
-XII. PENGESAHAN
-
-${kotaTanggal || '[Kota/Kabupaten], ' + getCurrentDateFormatted()}
-
-Mengetahui,
-Kepala ${namaSekolah || '[Nama Lengkap Sekolah Anda]'}
-
-${namaKepalaSekolah || '[Nama Lengkap Kepala Sekolah Anda], [Gelar]'}
-NIP. ${nipKepalaSekolah || '[NIP Kepala Sekolah Anda, jika ada]'}
-
-
-${signatureTabs}Guru Mata Pelajaran
-
-${signatureTabs}${namaGuru || '[Nama Lengkap Guru Anda], S.Pd.'}
-${signatureTabs}NIP. ${nipGuru || '[NIP Guru Anda, jika ada]'}
-            `;
-            return rppContent;
-        };
-
-        /**
-         * Event listener for the "Generate RPP" button.
-         * Hides the form and displays the generated RPP.
-         */
-        generateRppBtn.addEventListener('click', () => {
-            const rppOutput = generateRppWordFriendly();
-            generatedRppTextArea.value = rppOutput;
-            rppOutputSection.classList.remove('hidden'); // Show the output section
-            // Scroll to the generated RPP section
-            rppOutputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-
-        /**
          * Event listener for the "Copy RPP" button.
          * Copies the content of the generated RPP textarea to the clipboard.
          */
@@ -578,18 +943,68 @@ ${signatureTabs}NIP. ${nipGuru || '[NIP Guru Anda, jika ada]'}
             try {
                 document.execCommand('copy'); // Execute copy command
                 copyRppBtn.textContent = 'Disalin!'; // Change button text to indicate success
+                showNotification('Teks RPP berhasil disalin ke clipboard!', false);
                 setTimeout(() => {
                     copyRppBtn.textContent = 'Salin RPP'; // Reset button text after 2 seconds
                 }, 2000);
             } catch (err) {
                 console.error('Gagal menyalin teks: ', err);
                 copyRppBtn.textContent = 'Gagal menyalin!'; // Indicate failure
+                showNotification('Gagal menyalin teks RPP.', true);
             }
         });
+
+        /**
+         * Resets all form fields to their default or empty values.
+         */
+        const resetForm = () => {
+            document.getElementById('namaSekolah').value = '';
+            document.getElementById('mataPelajaran').value = '';
+            document.getElementById('kelasSemester').value = '';
+            document.getElementById('materiPokok').value = '';
+            document.getElementById('alokasiWaktu').value = '';
+            document.getElementById('namaGuru').value = '';
+            document.getElementById('nipGuru').value = '';
+            document.getElementById('tahunPelajaran').value = '';
+            document.getElementById('tujuanPembelajaran').value = '';
+            document.getElementById('kompetensiDasar').value = '';
+            document.getElementById('indikatorPencapaian').value = '';
+            document.getElementById('materiPembelajaran').value = '';
+            document.getElementById('metodePembelajaran').value = '';
+            document.getElementById('kegiatanPendahuluan').value = '';
+            document.getElementById('kegiatanInti').value = '';
+            document.getElementById('kegiatanPenutup').value = '';
+            document.getElementById('penilaianPembelajaran').value = '';
+            document.getElementById('remedialPengayaan').value = '';
+            document.getElementById('sumberBelajar').value = '';
+            document.getElementById('lampiran').value = '';
+            document.getElementById('namaKepalaSekolah').value = '';
+            document.getElementById('nipKepalaSekolah').value = '';
+
+            // Repopulate default values for KI and current date
+            populateDefaultValues();
+            showNotification('Formulir berhasil direset.', false);
+        };
+
 
         // Add event listeners to all input fields to update rppData
         inputFields.forEach(input => {
             input.addEventListener('input', handleInputChange);
+        });
+
+        // Event listeners for buttons
+        generateRppBtn.addEventListener('click', generateRppWithAI);
+        resetFormBtn.addEventListener('click', resetForm);
+
+        // API Modal Event Listeners
+        saveApiBtn.addEventListener('click', storeApiKey);
+        clearApiBtn.addEventListener('click', removeApiKey);
+        closeApiModalBtn.addEventListener('click', () => {
+            geminiApiModal.classList.remove('show');
+        });
+        apiSettingsButton.addEventListener('click', () => {
+            geminiApiModal.classList.add('show');
+            modalApiInputElem.value = localStorage.getItem('geminiApiKey') || '';
         });
 
         // Populate default values when the DOM is fully loaded
